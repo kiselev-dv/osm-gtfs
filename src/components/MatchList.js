@@ -3,6 +3,7 @@ import { GTFSRoute, GTFSTripUnion } from '../models/GTFSData';
 import StopListElement from './StopListElement';
 
 import './match-list.css';
+import { loadInJOSM } from '../services/JOSMRemote';
 
 export default function MatchList({
     matchData, gtfsData, 
@@ -89,7 +90,7 @@ export default function MatchList({
                 />
             </div>
             <div>
-                <button onClick={openListInJOSM}>Open in JOSM</button>
+                <button onClick={openListInJOSM}>Open listed stops in JOSM</button>
             </div>
         </div>
         <div className={'scroll-pane'}>

@@ -12,13 +12,13 @@ const BASE = 'http://localhost:8111'
 /**
  * https://josm.openstreetmap.de/wiki/Help/RemoteControlCommands#load_object
 */
-export function loadInJOSM(osmElements) {
+export function loadInJOSM(osmElements, loadReferers = false) {
     const ids = osmElements?.map(e => `${e.type[0]}${e.id}`);
 
     const urlArgs = {
         objects: ids.join(),
         new_layer: true,
-        referrers: false
+        referrers: loadReferers
     }
 
     const url = new URL('load_object', BASE);
