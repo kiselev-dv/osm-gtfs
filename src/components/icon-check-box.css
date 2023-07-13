@@ -1,0 +1,27 @@
+/* For whatever reason this doesn't work, it's included static way in index.html */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+.icon-check-box {
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+    font-size: 1.25em;
+
+    display: inline-block;
+    border-radius: 0.1em;
+
+    color: black;
+    background-color: unset;
+}
+
+.icon-check-box.checked {
+    font-size: 0.9em;
+    background-color: #0075ff;
+    color: white;
+    margin-inline-end: 0.2em;
+    margin-inline-start: 0.2em;
+}
+
+.icon-check-box.checked:hover {
+    background-color: #015dc6;
+}

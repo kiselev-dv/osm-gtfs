@@ -1,0 +1,37 @@
+.match-list {
+    margin-top: 1em;
+    padding-top: 0.5em;
+
+    height: 40%;
+
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.stop-match {
+    cursor: pointer;   
+}
+.stop-match.selected {
+    font-weight: bold;
+}
+.match-list-filters label {
+    margin-inline-end: 0.25em;
+}
+.match-list-filters input[type="checkbox"] {
+    vertical-align: baseline;
+}
+.match-mark {
+    display: inline-block;
+    border-radius: 0.3em;
+    width: 0.6em;
+    height: 0.6em;
+    vertical-align: -20%;
+    margin-right: 0.25em;
+    margin-left: 0.25em;
+}
+
+.match-list .scroll-pane {
+    margin-top: 0.5em;
+    border-top: 1px solid #999;
+}
