@@ -18,6 +18,7 @@ import OsmStop from './models/OsmStop';
 import StopMoveController from './components/StopMoveController';
 import { loadInJOSM } from './services/JOSMRemote';
 import classNames from 'classnames';
+import { Changes } from './components/Changes';
 
 function App() {
 
@@ -164,6 +165,11 @@ function App() {
                         onClick={() => {selectTab('stops')}} key={'stops'}>
                             Stops
                     </span>
+                    <span 
+                        className={classNames('tab-selector', {active: activeTab==='changes'})} 
+                        onClick={() => {selectTab('changes')}} key={'changes'}>
+                            Changes
+                    </span>
                 </div>
                 <div className={classNames('tab', 'import-tab', {active: activeTab === 'import'})}>
                     <GTFSLoad gtfsData={gtfsData} onDataLoaded={onGtfsLoaded} />
@@ -192,6 +198,10 @@ function App() {
                         filteredMatches, setFilteredMatches,
                         selectedMatch, selectMatch
                     }}></MatchList>}
+                </div>
+
+                <div className={classNames('tab', 'changes-tab', {active: activeTab === 'changes'})}>
+                    <Changes {...{osmData}} />
                 </div>
             </div>
 

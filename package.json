@@ -12,7 +12,8 @@
         "papaparse": "^5.4.1",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
-        "react-dropzone": "^14.2.3"
+        "react-dropzone": "^14.2.3",
+        "xml": "^1.0.1"
     },
     "devDependencies": {
         "@babel/core": "^7.15.5",

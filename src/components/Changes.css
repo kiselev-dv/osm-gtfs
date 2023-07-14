@@ -1,0 +1,14 @@
+
+.changes-tab span {
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+}
+
+.change-element-id {
+    width: 5.5em;
+    display: inline-block;
+}
+.change-element-type {
+    width: 2em;
+    display: inline-block;
+}

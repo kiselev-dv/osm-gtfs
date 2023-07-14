@@ -125,13 +125,9 @@ export default class OSMData {
     }
 
     updateNodeLatLng(latlng, osmElement) {
-        this.changes.push(
-            { 'element': osmElement, action: 'update_position' }
-        );
+        this.commitAction({ 'element': osmElement, action: 'update_position' });
         
         const {lat, lng} = latlng;
-
-        console.log('update osmElement lat lon', osmElement, lat, lng);
 
         osmElement.lat = lat;
         osmElement.lon = lng;
@@ -143,6 +139,20 @@ export default class OSMData {
         
         this.elements.push(element);
         this.idMap.set(id, element);
+    }
+
+    commitAction({element, action}) {
+        const existing = this.changes.find(change => 
+            change.element.id === element.id &&
+            change.element.type === element.type
+        );
+
+        if (existing) {
+            existing.action = action;
+        }
+        else {
+            this.changes.push({element, action});
+        }
     }
 
     getNodeById(id) {

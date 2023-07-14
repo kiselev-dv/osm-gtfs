@@ -1,4 +1,4 @@
-
+import xml from "xml";
 
 /**
  * Interface to call JOSM Remote commands
@@ -25,4 +25,8 @@ export function loadInJOSM(osmElements, loadReferers = false) {
     Object.entries(urlArgs).forEach(([k, v]) => url.searchParams.append(k, v));
 
     fetch(url).catch(e => {alert('failed to open JOSM remote')});
+}
+
+export function createOSMXml(osmData) {
+    
 }

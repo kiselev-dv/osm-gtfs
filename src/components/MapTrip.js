@@ -13,6 +13,11 @@ export default function MapTrip({matchTrip}) {
     const map = useContext(MapContext);
 
     useEffect(() => {
+        if (matchTrip && !matchTrip.stopMatchSequence) {
+            console.warn('Strange matchTrip', matchTrip);
+            return;
+        }
+
         console.log('Redraw trip');
         if (map && matchTrip) {
             const latlngs = matchTrip.stopMatchSequence.map(match => {

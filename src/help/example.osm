@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version='0.6' generator='JOSM'>
+  <node id='-138463' action='modify' visible='true' lat='44.70216081669' lon='-63.70279569987'>
+    <tag k='highway' v='bus_stop' />
+    <tag k='public_transport' v='platform' />
+  </node>
+  <node id='5149978108' action='delete' timestamp='2022-08-17T23:05:55Z' uid='698649' user='Dartmouthmapmaker' visible='true' version='6' changeset='125038068' lat='44.7018022' lon='-63.7021261'>
+    <tag k='highway' v='bus_stop' />
+    <tag k='name' v='6383 - Larry Uteck Blvd After Civic 1181' />
+    <tag k='network' v='Halifax Transit' />
+    <tag k='network:wikipedia' v='en:Halifax Transit' />
+    <tag k='operator' v='Halifax Regional Municipality' />
+    <tag k='owner' v='Halifax Regional Municipality' />
+    <tag k='public_transport' v='platform' />
+    <tag k='ref' v='6383' />
+    <tag k='source' v='HRM open Data Halifax Regional Municipality;survey' />
+  </node>
+  <node id='5149978109' action='modify' timestamp='2022-08-17T23:05:55Z' uid='698649' user='Dartmouthmapmaker' visible='true' version='6' changeset='125038068' lat='44.7024028' lon='-63.7028503'>
+    <tag k='highway' v='bus_stop' />
+    <tag k='name' v='6027 - Larry Uteck Blvd Before Amesbury Gt' />
+    <tag k='network' v='Halifax Transit' />
+    <tag k='network:wikipedia' v='en:Halifax Transit' />
+    <tag k='operator' v='Halifax Regional Municipality' />
+    <tag k='owner' v='Halifax Regional Municipality' />
+    <tag k='public_transport' v='platform' />
+    <tag k='ref' v='6027' />
+    <tag k='source' v='HRM open Data Halifax Regional Municipality;survey' />
+    <tag k='test' v='yes' />
+  </node>
+</osm>
