@@ -1,6 +1,6 @@
 import * as Papa from 'papaparse';
 import BBOX from './BBOX';
-import { lonLatToMerc } from './misc'; 
+import { lonLatToMerc } from './MercatorUtil'; 
 
 export default class GTFSData {
     constructor() {

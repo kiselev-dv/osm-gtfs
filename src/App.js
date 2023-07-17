@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.css';
 
 import Map from './components/Map'
@@ -16,9 +16,9 @@ import RematchController from './components/RematchController';
 import NewStopController from './components/NewStopController';
 import OsmStop from './models/OsmStop';
 import StopMoveController from './components/StopMoveController';
-import { loadInJOSM } from './services/JOSMRemote';
 import classNames from 'classnames';
 import { Changes } from './components/Changes';
+import { filterMapKeys, findMostPopularTag } from './services/utils';
 
 function App() {
 
@@ -66,18 +66,12 @@ function App() {
         const refTags = filterMapKeys(tagStats, /gtfs|ref/);
         setGtfsTags(refTags);
 
-        if (refTags) {
-            const mostPopular = Object.entries(refTags).sort((e1, e2) => e2[1] - e1[1])[0];
-            if (mostPopular) {
-                const [tagKey, tagCount] = mostPopular;
-                if (tagCount > 50) {
-                    setMatchSettings({
-                        ...matchSettings,
-                        refTag: tagKey
-                    });
-                }
-            }
-        }
+        findMostPopularTag(refTags, 50, tagKey => {
+            setMatchSettings({
+                ...matchSettings,
+                refTag: tagKey
+            });
+        });
 
         setOSMData(data);
 
@@ -143,7 +137,9 @@ function App() {
         }
         setMoveMatchSubj(undefined);
 
-    }, [setMoveMatchSubj, osmData, matchData, selectMatch, highlightedMatchTrip, setHighlightedMatchTrip, filteredMatches, setFilteredMatches]);
+    }, [setMoveMatchSubj, osmData, matchData, selectMatch, 
+        highlightedMatchTrip, setHighlightedMatchTrip, 
+        filteredMatches, setFilteredMatches]);
 
     const hideMarkers = rematchSubj || newStopSubj;
 
@@ -219,16 +215,6 @@ function App() {
             </div>
         </div>
     </>;
-}
-
-function filterMapKeys(map, re) {
-    const result = {};
-    for (const [key, value] of map) {
-        if (re.test(key)) {
-            result[key] = value;
-        }
-    }
-    return result;
 }
 
 export default App;

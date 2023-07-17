@@ -1,5 +1,5 @@
 import { getElementLonLat } from "../services/OSMData";
-import { lonLatToMerc } from "./misc";
+import { lonLatToMerc } from "./MercatorUtil";
 
 export default class OsmStop {
     constructor(stopPosition, platform) {
