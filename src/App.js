@@ -19,6 +19,7 @@ import StopMoveController from './components/StopMoveController';
 import classNames from 'classnames';
 import { Changes } from './components/Changes';
 import { filterMapKeys, findMostPopularTag } from './services/utils';
+import OpenCurentViewInJosm from './components/OpenCurentViewInJosm';
 
 function App() {
 
@@ -84,13 +85,23 @@ function App() {
     const possibleOSMRefTags = Object.entries(gtfsTags || {})
         .map(([key, val]) => <span key={key}><code>{key}</code> ({val} objects) </span>);
 
+    // Editor state
+    const [editSubj, setEditSubj] = useState();
+    const doneEdit = useCallback(() => {
+        const {action, match, elementRole} = editSubj;
+
+
+        setEditSubj(undefined);
+    }, [editSubj, setEditSubj]);
+
     // Show osm stops on map to match them with GTFS Stop
     const [rematchSubj, setRematchSubj] = useState();
     const assignMatch = useCallback(osmElement => {
         const { match, elementRole } = rematchSubj;
 
         setRematchSubj(undefined);
-    }, [rematchSubj, setRematchSubj]);
+        setEditSubj(undefined);
+    }, [editSubj, setEditSubj, rematchSubj, setRematchSubj]);
 
     const [newStopSubj, setNewStopSubj] = useState();
     const assignNewStop = useCallback(latlng => {
@@ -203,6 +214,7 @@ function App() {
 
             <div className={'main-right'}>
                 {<Map bbox={dataBBOX}>
+                    <OpenCurentViewInJosm/>
                     <MapTrip matchTrip={highlightedMatchTrip} />
                     { !hideMarkers && matchMarkers }
                     {rematchSubj && <RematchController 

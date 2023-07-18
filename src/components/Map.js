@@ -50,7 +50,7 @@ export default function Map({children, view, bbox, satellite}) {
         L.control.layers({
             "OpenStreetMap": mapnik,
             "Satellite": sat
-        }, {}).addTo(map);
+        }, {}, {collapsed: false}).addTo(map);
 
         setMap(map);
 
