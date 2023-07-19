@@ -214,7 +214,7 @@ function App() {
 
             <div className={'main-right'}>
                 {<Map bbox={dataBBOX}>
-                    <OpenCurentViewInJosm/>
+                    <OpenCurentViewInJosm filteredMatches={filteredMatches}/>
                     <MapTrip matchTrip={highlightedMatchTrip} />
                     { !hideMarkers && matchMarkers }
                     {rematchSubj && <RematchController 
