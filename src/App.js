@@ -20,6 +20,7 @@ import classNames from 'classnames';
 import { Changes } from './components/Changes';
 import { filterMapKeys, findMostPopularTag } from './services/utils';
 import OpenCurentViewInJosm from './components/OpenCurentViewInJosm';
+import { TagEditor } from './components/OsmTags';
 
 function App() {
 
@@ -45,6 +46,11 @@ function App() {
     const [selectedMatch, selectMatch] = useState();
     const [highlightedTrip, setHighlightedGtfsTrip] = useState();
     const [highlightedMatchTrip, setHighlightedMatchTrip] = useState();
+
+    const [platformTemplate, setPlatformTemplate] = useState({
+        'public_transport': 'platform',
+        'highway': 'bus_stop',
+    });
 
     const setHighlightedTrip = useCallback(gtfsTrip => {
         setHighlightedGtfsTrip(gtfsTrip);
@@ -152,8 +158,6 @@ function App() {
             setHighlightedMatchTrip({...highlightedMatchTrip});
         }
 
-
-
         setMoveMatchSubj(undefined);
 
     }, [setMoveMatchSubj, osmData, matchData, selectMatch, 
@@ -169,6 +173,7 @@ function App() {
     return <>
         <div className={'main-container'}>
             <div className={'main-left'}>
+                
                 <div className={'tab-header'}>
                     <span 
                         className={classNames('tab-selector', {active: activeTab==='import'})} 
@@ -186,6 +191,7 @@ function App() {
                             Changes
                     </span>
                 </div>
+
                 <div className={classNames('tab', 'import-tab', {active: activeTab === 'import'})}>
                     <GTFSLoad gtfsData={gtfsData} onDataLoaded={onGtfsLoaded} />
 
@@ -195,6 +201,12 @@ function App() {
                     { gtfsData && <MatchSettings {...{gtfsTags, matchSettings, setMatchSettings, matchDone, runMatch}}/> }
 
                     { osmData && <button disabled={matchDone} onClick={runMatch}>Run match</button>}
+
+                    <h4>Template tags for platform</h4>
+                    <TagEditor 
+                        tags={platformTemplate} 
+                        onChange={t => { setPlatformTemplate(t); }} />
+
                 </div>
 
                 <div className={classNames('tab', 'stops-tab', {active: activeTab === 'stops'})}>

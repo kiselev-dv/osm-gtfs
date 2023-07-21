@@ -148,6 +148,15 @@ export default class OSMData {
     setWayLatLng(latlng, osmElement) {
         console.warn('setWayLatLng not implemented');
     }
+
+    setElementTags(tags, osmElement) {
+        this.commitAction({ 'element': osmElement, action: 'change_tags' });
+        
+        const validTags = Object.entries(tags)
+            .filter(([k, v]) => !isBlank(k) && !isBlank(v));
+
+        osmElement.tags = Object.fromEntries(validTags);
+    }
     
     addElement(element) {
         const {id, type} = element;
@@ -164,10 +173,14 @@ export default class OSMData {
         );
 
         if (existing) {
-            existing.action = action;
+            !existing.action.includes(action) && existing.action.push(action);
         }
         else {
-            this.changes.push({element, action});
+            this.changes.push({
+                element,
+                original: {...element}, 
+                action: [action]
+            });
         }
     }
 
@@ -188,6 +201,10 @@ export default class OSMData {
         return this.idMap.get(key);
     }
 
+}
+
+function isBlank(str) {
+    return str === undefined || str === null || /^\s*$/.test(str);
 }
 
 // OSM Data is a Singleton
