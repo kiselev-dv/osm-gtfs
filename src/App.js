@@ -139,13 +139,21 @@ function App() {
 
         // Always true atm
         if (osmElement.type === 'node') {
-            osmData.updateNodeLatLng(latlng, osmElement);
-            osmStop._updatePosition();
+            osmData.setNodeLatLng(latlng, osmElement);
 
             selectMatch(subj.match);
             setHighlightedMatchTrip({...highlightedMatchTrip});
-            //setFilteredMatches(filteredMatches);
         }
+        if (osmElement.type === 'way') {
+            // Move all nodes of a way
+            osmData.setWayLatLng(latlng, osmElement);
+
+            selectMatch(subj.match);
+            setHighlightedMatchTrip({...highlightedMatchTrip});
+        }
+
+
+
         setMoveMatchSubj(undefined);
 
     }, [setMoveMatchSubj, osmData, matchData, selectMatch, 

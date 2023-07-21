@@ -17,9 +17,20 @@ export default class GTFSData {
         Papa.parse(rawdata, {
             header: true,
             step: ({data: stopData}) => {
+                if ( !stopData.stop_id ) {
+                    return;
+                }
+
                 const stop = new GTFSStop(stopData);
-                this.stops.push(stop);
-                this.stopById[stop.id] = stop;
+
+                const {lon, lat} = stop;
+                if (!Number.isNaN(lon) && !Number.isNaN(lat)) {
+                    this.stops.push(stop);
+                    this.stopById[stop.id] = stop;
+                }
+                else {
+                    console.error('Failed to parse stop coordinates', stop);
+                }
             }
         });
 

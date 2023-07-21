@@ -54,10 +54,24 @@ export function getElementLonLat(e) {
     if (e.type === 'node') {
         return [e.lon, e.lat];
     }
-    else if (e.type === 'way') {
-        // TODO
+    
+    if (e.type === 'way') {
+        const nodes = e.nodes
+            .map(nid => instance.getNodeById(nid))
+        
+        try {
+            const llngs = nodes.map(({lat, lon}) => ({lat, lng: lon}));
+            const center = new L.LatLngBounds(llngs).getCenter();
+
+            return [center.lng, center.lat];
+        }
+        catch (err) {
+            console.log('Failed to get geometry for way', e, nodes);
+            console.error('Failed to get geometry for way', err);
+        }
     }
-    else if (e.type === 'relation') {
+    
+    if (e.type === 'relation') {
         // TODO
     }
 }
@@ -72,8 +86,6 @@ export default class OSMData {
     }
 
     static parseOverpassData(overpassData) {
-        const instance = new OSMData();
-        
         overpassData.elements.forEach(e => {
             instance.updateElement(e);
         });
@@ -93,11 +105,11 @@ export default class OSMData {
     }
 
     updateElement(element) {
-        const {id: osmid, type} = element;
-        const id = `${type}${osmid}`;
+        const {id, type} = element;
+        const key = `${type}${id}`;
 
-        if (this.idMap.has(id)) {
-            // TBD
+        if (this.idMap.has(key)) {
+            // TBD, check for edits
         }
         else {
             this.addElement(element);
@@ -124,7 +136,7 @@ export default class OSMData {
         return element;
     }
 
-    updateNodeLatLng(latlng, osmElement) {
+    setNodeLatLng(latlng, osmElement) {
         this.commitAction({ 'element': osmElement, action: 'update_position' });
         
         const {lat, lng} = latlng;
@@ -132,13 +144,17 @@ export default class OSMData {
         osmElement.lat = lat;
         osmElement.lon = lng;
     }
+
+    setWayLatLng(latlng, osmElement) {
+        console.warn('setWayLatLng not implemented');
+    }
     
     addElement(element) {
-        const {id: osmid, type} = element;
-        const id = `${type}${osmid}`;
+        const {id, type} = element;
+        const key = `${type}${id}`;
         
         this.elements.push(element);
-        this.idMap.set(id, element);
+        this.idMap.set(key, element);
     }
 
     commitAction({element, action}) {
@@ -156,19 +172,23 @@ export default class OSMData {
     }
 
     getNodeById(id) {
-        this.getByTypeAndId('node', id);
+        return this.getByTypeAndId('node', id);
     }
     
     getWayById(id) {
-        this.getByTypeAndId('way', id);
+        return this.getByTypeAndId('way', id);
     }
     
     getRelationById(id) {
-        this.getByTypeAndId('relation', id);
+        return this.getByTypeAndId('relation', id);
     }
 
     getByTypeAndId(type, id) {
-        return this.idMap.get(`${type}${id}`);
+        const key = `${type}${id}`;
+        return this.idMap.get(key);
     }
 
 }
+
+// OSM Data is a Singleton
+const instance = new OSMData();

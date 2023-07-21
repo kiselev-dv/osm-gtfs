@@ -16,7 +16,13 @@ function parseStopsFromOSMData(osmData) {
         .filter(e => e.tags && e.tags['highway'] === 'bus_stop');
 
     return hwBusStop.map(e => {
-        return new OsmStop(null, e);
+        try {
+            return new OsmStop(null, e);
+        }
+        catch (err) {
+            console.error('Failed to create OsmStop for', e);
+            return undefined;
+        }
     });
 }
 
@@ -57,10 +63,16 @@ export class StopsMatch {
 
         const osmStops = parseStopsFromOSMData(osmData);
 
-        const stopsIndex = new KDBush(osmStops.length);
-        osmStops.forEach(s => {
-            stopsIndex.add(s.position.x, s.position.y);
-        });
+        const indexEntries = osmStops.map(stop => ({
+                stop,
+                point: stop?.getPosition3857()
+            }))
+            .filter(entry => entry.point && entry.stop);
+
+
+        const stopsIndex = new KDBush(indexEntries.length);
+        indexEntries.forEach(({point}) => {stopsIndex.add(point.x, point.y)})
+
         stopsIndex.finish();
 
         const refTag = this.settings.refTag;
@@ -70,7 +82,7 @@ export class StopsMatch {
         gtfsData.stops.forEach(gtfsStop => {
             const surroundOsmStops = stopsIndex
                 .within(gtfsStop.position.x, gtfsStop.position.y, SEARCH_RADIUS)
-                .map(i => osmStops[i]);
+                .map(i => indexEntries[i].stop);
 
             const match = surroundOsmStops ? findMatch(gtfsStop, surroundOsmStops, refTag) : undefined;
 

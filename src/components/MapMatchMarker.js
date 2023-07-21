@@ -11,7 +11,7 @@ export default function MapMatchMarker({ match, selectedMatch, selectMatch }) {
     const gtfsStop = match.gtfsStop;
     const osmStop = match.osmStop;
     
-    const {lon, lat} = osmStop || gtfsStop;
+    const {lon, lat} = osmStop?.getLonLat() || gtfsStop;
 
     const color = getMatchColor(match);
 
