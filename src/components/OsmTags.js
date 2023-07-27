@@ -20,13 +20,14 @@ import classNames from 'classnames';
  * @type {React.FC<OSMElementTagsProps>}
  */
 export default function OSMElementTags({osmElement, osmData}) {
-    
-    const [tags, setTags] = useState(osmElement?.tags);
+    const tags = osmElement?.tags;
+
+    const [redraw, setRedraw] = useState({});
 
     const handleEdit = useCallback(newTags => {
         osmData.setElementTags(newTags, osmElement);
-        setTags(newTags);
-    }, [tags, osmElement, setTags]);
+        setRedraw({});
+    }, [tags, osmElement, setRedraw]);
     
     return <TagEditor tags={tags} onChange={handleEdit} ></TagEditor>
 }
