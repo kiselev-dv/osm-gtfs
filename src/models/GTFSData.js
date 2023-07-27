@@ -186,4 +186,8 @@ export class GTFSStop {
         this.name = stop_name;
     }
 
+    getLonLat() {
+        return {lon: this.lon, lat:this.lat};
+    }
+
 }

@@ -120,9 +120,8 @@ function App() {
 
         const osmElement = osmData.createNewNode(latlng, {
             name: name,
-            "public_transport": "platform",
-            "highway": "bus_stop",
             [gtfsRefTag]: code,
+            ...platformTemplate
         });
 
         const stopPosition = undefined;
@@ -136,7 +135,7 @@ function App() {
         }
 
         setNewStopSubj(undefined);
-    }, [newStopSubj, setNewStopSubj, osmData, matchData, selectMatch]);
+    }, [newStopSubj, setNewStopSubj, platformTemplate, osmData, matchData, selectMatch]);
 
     const [moveMatchSubj, setMoveMatchSubj] = useState();
     const onPositionUpdate = useCallback((latlng, subj) => {
@@ -169,6 +168,8 @@ function App() {
     const matchMarkers = filteredMatches?.map(match => 
         <MapMatchMarker key={match.id} {...{match, selectedMatch, selectMatch}}></MapMatchMarker>
     );
+
+    const ceneter = (selectedMatch?.osmStop || selectedMatch?.gtfsStop)?.getLonLat();
 
     return <>
         <div className={'main-container'}>
@@ -233,7 +234,7 @@ function App() {
             </div>
 
             <div className={'main-right'}>
-                {<Map bbox={dataBBOX}>
+                {<Map bbox={dataBBOX} center={ceneter}>
                     <OpenCurentViewInJosm filteredMatches={filteredMatches}/>
                     <MapTrip matchTrip={highlightedMatchTrip} />
                     { !hideMarkers && matchMarkers }

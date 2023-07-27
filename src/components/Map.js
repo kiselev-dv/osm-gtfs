@@ -35,7 +35,7 @@ export const layers = {
     mapnik, sat
 }
 
-export default function Map({children, view, bbox, satellite}) {
+export default function Map({children, view, bbox, center, satellite}) {
 
     const divRef = useRef();
     const [map, setMap] = useState();
@@ -62,10 +62,16 @@ export default function Map({children, view, bbox, satellite}) {
     }, []);
 
     useEffect(() => {
-        if(map && view) {
+        if (map && view) {
             map.setView(view.center, view.zoom);
         }
     }, [map, view]);
+    
+    useEffect(() => {
+        if (map && center) {
+            map.panTo(L.latLng(center.lat, center.lon));
+        }
+    }, [map, center]);
     
     useEffect(() => {
         if(map && bbox) {
