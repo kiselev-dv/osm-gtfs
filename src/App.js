@@ -21,6 +21,7 @@ import { Changes } from './components/Changes';
 import { filterTagStatsByRe, findMostPopularTag } from './services/utils';
 import OpenCurentViewInJosm from './components/OpenCurentViewInJosm';
 import { TagEditor } from './components/OsmTags';
+import RouteMatch from './components/RouteMatch';
 
 function App() {
 
@@ -242,11 +243,14 @@ function App() {
                 <div className={classNames('tab', 'routes-tab', {active: activeTab === 'routes'})}>
                     <div className={'scroll-pane'}>
                         <h4>Matched</h4>
-                        { routesMatch?.matched?.map(r => <div key={r.gtfsRoute.id}>{ r.gtfsRoute.id } { r.osmRoute.name }</div>) }
+                        { routesMatch?.matched?.map(r => <RouteMatch key={r.gtfsRoute.id} routeMatch={r} />) }
+                        
                         <h4>Unmatched GTFS</h4>
-                        { routesMatch?.unmatchedGtfs?.map(r => <div key={r.gtfsRoute.id}>{ r.gtfsRoute.id }</div>) }
+                        { routesMatch?.unmatchedGtfs?.map(r => <RouteMatch key={r.gtfsRoute.id} routeMatch={r}/>) }
+                        
                         <h4>Unmatched OSM</h4>
-                        { routesMatch?.unmatchedOsm?.map(r => <div key={ r.osmRoute.ref }>{ r.osmRoute.ref } { r.osmRoute.name }</div>) }
+                        { routesMatch?.unmatchedOsm?.map(r => <RouteMatch key={ r.osmRoute.ref } routeMatch={r}/>) }
+                        
                         <h4>OSM Routes without ref</h4>
                         { routesMatch?.noRefRelations?.map(r => <div key={ r.id }>{ r.tags.name }</div>) }
                     </div>
