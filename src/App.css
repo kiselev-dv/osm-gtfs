@@ -20,6 +20,14 @@ html, body, #root {
     display: flex;
     flex-direction: column;
 }
+.main-divider {
+    width: 0.2em;
+    background-color: #666;
+    flex: 0 0 auto;
+    /* cursor: col-resize; */
+}
+
+
 .main-left .tab {
     height: min-content;
     flex: 1 0 auto;

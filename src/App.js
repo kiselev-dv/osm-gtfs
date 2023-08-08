@@ -259,6 +259,8 @@ function App() {
                 </div>
             </div>
 
+            <div className={'main-divider'}></div>
+
             <div className={'main-right'}>
                 {<Map bbox={dataBBOX} center={ceneter}>
                     <OpenCurentViewInJosm filteredMatches={filteredMatches}/>
