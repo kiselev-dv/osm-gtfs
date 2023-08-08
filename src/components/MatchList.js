@@ -67,7 +67,7 @@ export default function MatchList({
             />
             <div>
                 <FilterCheckbox 
-                    label={'Show matched:'} 
+                    label={`Show matched: ${matchData?.matched?.length}`} 
                     filterKey={'showMatched'}
                     onChange={filterChangeHandler}
                     filters={filters}
@@ -75,7 +75,7 @@ export default function MatchList({
             </div>
             <div>
                 <FilterCheckbox 
-                    label={'Show unmatched GTFS:'} 
+                    label={`Show unmatched GTFS: ${matchData?.unmatchedGtfs?.length}`} 
                     filterKey={'showUnmatchedGtfs'}
                     onChange={filterChangeHandler}
                     filters={filters}
@@ -83,7 +83,7 @@ export default function MatchList({
             </div>
             <div>
                 <FilterCheckbox 
-                    label={'Show unmatched OSM:'} 
+                    label={`Show unmatched OSM: ${matchData?.unmatchedOsm?.length}`} 
                     filterKey={'showUnmatchedOsm'}
                     onChange={filterChangeHandler}
                     filters={filters}
