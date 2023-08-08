@@ -25,14 +25,16 @@ const controlInstance = new OpenInJOSMControl({position: 'topright'});
 export default function OpenCurentViewInJosm({filteredMatches}) {
 
     const map  = useContext(MapContext);
+    const matchesRef = useRef();
+    matchesRef.current = filteredMatches;
 
-    const cb = useCallback(() => {
-        console.log('OpenCurentViewInJosm', filteredMatches, map);
-        if (filteredMatches && map) {
+    controlInstance.onClick = () => {
+        const matches = matchesRef.current;
+        if (matches && map) {
             const bounds = map.getBounds();
             const osmElements = [];
             
-            filteredMatches.forEach(({osmStop}) => {
+            matches.forEach(({osmStop}) => {
                 if (osmStop) {
                     const {stopPosition, platform} = osmStop;
                     
@@ -51,9 +53,7 @@ export default function OpenCurentViewInJosm({filteredMatches}) {
 
             loadInJOSM(osmElements, true);
         }
-    }, [map, filteredMatches?.length]);
-
-    controlInstance.onClick = cb;
+    };
 
     useEffect(() => {
         if (map) {
