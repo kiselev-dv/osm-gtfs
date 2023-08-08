@@ -1,5 +1,5 @@
 
-export function filterMapKeys(map, re) {
+export function filterTagStatsByRe(map, re) {
     const result = {};
     for (const [key, value] of map) {
         if (re.test(key)) {

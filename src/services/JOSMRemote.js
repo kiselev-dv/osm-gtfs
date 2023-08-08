@@ -24,6 +24,7 @@ export function loadInJOSM(osmElements, loadReferers = false) {
     const url = new URL('load_object', BASE);
     Object.entries(urlArgs).forEach(([k, v]) => url.searchParams.append(k, v));
 
+    console.log('Call josm remote', url);
     fetch(url).catch(e => {alert('failed to open JOSM remote')});
 }
 

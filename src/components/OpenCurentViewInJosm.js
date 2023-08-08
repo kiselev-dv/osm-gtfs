@@ -2,6 +2,7 @@ import React, {useCallback, useContext, useEffect, useRef} from "react";
 
 import { MapContext } from "./Map";
 import { loadInJOSM } from "../services/JOSMRemote";
+import { getElementLonLat, lonLatToLatLng } from "../services/OSMData";
 
 const OpenInJOSMControl = L.Control.extend({
     onAdd: function(map) {
@@ -15,6 +16,7 @@ const OpenInJOSMControl = L.Control.extend({
     },
 
     onClick: function() {
+        console.warn('Empty onclick handler');
     }
 });
 
@@ -25,6 +27,7 @@ export default function OpenCurentViewInJosm({filteredMatches}) {
     const map  = useContext(MapContext);
 
     const cb = useCallback(() => {
+        console.log('OpenCurentViewInJosm', filteredMatches, map);
         if (filteredMatches && map) {
             const bounds = map.getBounds();
             const osmElements = [];
@@ -32,10 +35,15 @@ export default function OpenCurentViewInJosm({filteredMatches}) {
             filteredMatches.forEach(({osmStop}) => {
                 if (osmStop) {
                     const {stopPosition, platform} = osmStop;
-                    if (stopPosition && bounds.contains({lat: stopPosition.lat, lng: stopPosition.lon})) {
+                    
+                    const spLatLng = stopPosition && lonLatToLatLng(getElementLonLat(stopPosition));
+                    const plLatLng = platform && lonLatToLatLng(getElementLonLat(platform));
+
+                    if (stopPosition && spLatLng && bounds.contains(spLatLng)) {
                         osmElements.push(stopPosition);
                     }
-                    if (platform && bounds.contains({lat: platform.lat, lng: platform.lon})) {
+
+                    if (platform && plLatLng && bounds.contains(plLatLng)) {
                         osmElements.push(platform);
                     }
                 }
@@ -43,11 +51,9 @@ export default function OpenCurentViewInJosm({filteredMatches}) {
 
             loadInJOSM(osmElements, true);
         }
-    }, [map, filteredMatches]);
+    }, [map, filteredMatches?.length]);
 
-    useEffect(() => {
-        controlInstance.onClick = cb;
-    }, [cb]);
+    controlInstance.onClick = cb;
 
     useEffect(() => {
         if (map) {

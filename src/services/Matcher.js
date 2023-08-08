@@ -4,16 +4,22 @@ import KDBush from 'kdbush';
 import OsmStop from '../models/OsmStop';
 import GTFSData, { GTFSStop } from '../models/GTFSData';
 import OSMData from './OSMData';
+import { OsmRoute } from '../models/OsmRoute';
 
 // Meters
 const SEARCH_RADIUS = 500;
+
+export const ROUTE_TYPES = [
+    'public_transport', 'bus', 'tram', 
+    'light_rail', 'ferry', 'trolleybus'
+];
 
 /**
  * @param { OSMData } osmData 
  */
 function parseStopsFromOSMData(osmData) {
-    const hwBusStop = osmData.elements
-        .filter(e => e.tags && e.tags['highway'] === 'bus_stop');
+    const hwBusStop = osmData.elements.filter(e => e.tags)
+        .filter(e => e.tags['highway'] === 'bus_stop' || e.tags['public_transport'] === 'platform');
 
     return hwBusStop.map(e => {
         try {
@@ -164,6 +170,92 @@ function findMatch(gtfsStop, surroundOsmStops, refTag) {
                     platform,
                     stopPosition
                 }
+            }
+        }
+    }
+}
+/**
+ * Parse routes from osm data
+ * 
+ * @param { OSMData } osmData 
+ * @returns { {id:number, tags:{}, type:string, members:{}[]}[] } 
+ */
+export function listRouteRelationsOSMData(osmData) {
+    const relations = osmData.elements
+        .filter(e => e.type === 'relation');
+
+    return relations.filter(e => e.tags).filter(e => {
+        return e.tags['type'] === 'route' && 
+            ROUTE_TYPES.includes(e.tags['route']);
+    });
+}
+
+export class RoutesMatch {
+    /**
+     * @param {*} settings
+     * @param { GTFSData } gtfsData
+     * @param { OSMData } osmData 
+     * @param { StopsMatch } stopsMatch 
+     */
+    constructor(settings, gtfsData, osmData, stopsMatch) {
+        this.settings = {
+            ...settings
+        };
+
+        this.osmRoutes = [];
+        
+        this.matched = [];
+        this.unmatchedGtfs = [];
+        this.unmatchedOsm = [];
+        this.noRefRelations = [];
+
+        this._runMatch(gtfsData, osmData, stopsMatch);
+    }
+
+    _runMatch(gtfsData, osmData, stopsMatch) {
+        const routeRelations = listRouteRelationsOSMData(osmData);
+        const refTag = this.settings.refTag;
+
+        const ref2Rel = new Map();
+
+        routeRelations.forEach(rel => {
+            const ref = rel.tags[refTag] || rel.tags['ref'];
+            if (ref) {
+                if (!ref2Rel.has(ref)) {
+                    ref2Rel.set(ref, []);
+                }
+
+                ref2Rel.get(ref).push(rel);    
+            }
+            else {
+                this.noRefRelations.push(rel);
+            }
+        });
+
+        const osmRouteByRef = new Map();
+        for (const [ref, relations] of ref2Rel.entries()) {
+            const osmRoute = new OsmRoute(ref, relations);
+            osmRouteByRef.set(ref, osmRoute);
+            this.osmRoutes.push(osmRoute);
+        }
+
+        Object.values(gtfsData.routes).forEach(gtfsRoute => {
+            const osmRoute = osmRouteByRef.get(gtfsRoute.id);
+            if (osmRoute) {
+                this.matched.push({
+                    osmRoute,
+                    gtfsRoute,
+                });
+            }
+            else {
+                this.unmatchedGtfs.push({gtfsRoute});
+            }
+        });
+
+        const matchedIds = this.matched.map(m => m.gtfsRoute.id);
+        for (let [ref, osmRoute] of osmRouteByRef.entries()) {
+            if (!matchedIds.includes(ref)) {
+                this.unmatchedOsm.push({osmRoute});
             }
         }
     }

@@ -9,7 +9,7 @@ import MatchDetails from './components/MatchDetails';
 import MapMatchMarker from './components/MapMatchMarker';
 import QeryOSM from './components/QueryOSM';
 
-import { StopsMatch } from './services/Matcher';
+import { RoutesMatch, StopsMatch, listRouteRelationsOSMData } from './services/Matcher';
 import { StopMatchesSequence } from './models/StopMatchesSequence';
 import MapTrip from './components/MapTrip';
 import RematchController from './components/RematchController';
@@ -18,7 +18,7 @@ import OsmStop from './models/OsmStop';
 import StopMoveController from './components/StopMoveController';
 import classNames from 'classnames';
 import { Changes } from './components/Changes';
-import { filterMapKeys, findMostPopularTag } from './services/utils';
+import { filterTagStatsByRe, findMostPopularTag } from './services/utils';
 import OpenCurentViewInJosm from './components/OpenCurentViewInJosm';
 import { TagEditor } from './components/OsmTags';
 
@@ -46,6 +46,7 @@ function App() {
     const [selectedMatch, selectMatch] = useState();
     const [highlightedTrip, setHighlightedGtfsTrip] = useState();
     const [highlightedMatchTrip, setHighlightedMatchTrip] = useState();
+    const [routesMatch, setRoutesMatch] = useState();
 
     const [platformTemplate, setPlatformTemplate] = useState({
         'public_transport': 'platform',
@@ -63,14 +64,18 @@ function App() {
 
     const runMatch = useCallback(() => {
         const match = new StopsMatch(matchSettings, gtfsData, osmData);
+
+        setRoutesMatch(new RoutesMatch(matchSettings, gtfsData, osmData, match));
+
         setMatchData(match);
         setFilteredMatches(match.matched);
         selectTab('stops');
     }, [matchSettings, gtfsData, osmData, setMatchData]);
 
     const handleOsmData = useCallback((data) => {
-        const tagStats = data.calculateTagStatistics();
-        const refTags = filterMapKeys(tagStats, /gtfs|ref/);
+        const tagStats = data.calculateTagStatistics(el => el.type === 'node');
+        const refTags = filterTagStatsByRe(tagStats, /gtfs|ref/);
+
         setGtfsTags(refTags);
 
         findMostPopularTag(refTags, 50, tagKey => {
@@ -87,9 +92,6 @@ function App() {
     const matchDone = matchSettingsMatch(matchSettings, matchData?.settings);
     
     const dataBBOX = gtfsData && gtfsData.bbox;
-
-    const possibleOSMRefTags = Object.entries(gtfsTags || {})
-        .map(([key, val]) => <span key={key}><code>{key}</code> ({val} objects) </span>);
 
     // Editor state
     const [editSubj, setEditSubj] = useState();
@@ -163,6 +165,9 @@ function App() {
         highlightedMatchTrip, setHighlightedMatchTrip, 
         filteredMatches, setFilteredMatches]);
 
+    const possibleOSMRefTags = Object.entries(gtfsTags || {})
+        .map(([key, val]) => <div key={key}><code>{key}</code> ({val} objects) </div>);
+
     const hideMarkers = rematchSubj || newStopSubj;
 
     const matchMarkers = filteredMatches?.map(match => 
@@ -187,6 +192,11 @@ function App() {
                             Stops
                     </span>
                     <span 
+                        className={classNames('tab-selector', {active: activeTab==='routes'})} 
+                        onClick={() => {selectTab('routes')}} key={'routes'}>
+                            Routes
+                    </span>
+                    <span 
                         className={classNames('tab-selector', {active: activeTab==='changes'})} 
                         onClick={() => {selectTab('changes')}} key={'changes'}>
                             Changes
@@ -198,7 +208,7 @@ function App() {
 
                     <QeryOSM setOSMData={handleOsmData} {...{gtfsData, osmData}}></QeryOSM>
 
-                    { gtfsTags && <div>Posible GTFS stop code tags: {possibleOSMRefTags}</div> }
+                    { gtfsTags && <div><h4>Posible GTFS stop code tags</h4> {possibleOSMRefTags}</div> }
                     { gtfsData && <MatchSettings {...{gtfsTags, matchSettings, setMatchSettings, matchDone, runMatch}}/> }
 
                     { osmData && <button disabled={matchDone} onClick={runMatch}>Run match</button>}
@@ -226,6 +236,17 @@ function App() {
                         filteredMatches, setFilteredMatches,
                         selectedMatch, selectMatch
                     }}></MatchList>}
+                </div>
+
+                <div className={classNames('tab', 'routes-tab', {active: activeTab === 'routes'})}>
+                    <h4>Matched</h4>
+                    { routesMatch?.matched?.map(r => <div key={r.gtfsRoute.id}>{ r.gtfsRoute.id } { r.osmRoute.name }</div>) }
+                    <h4>Unmatched GTFS</h4>
+                    { routesMatch?.unmatchedGtfs?.map(r => <div key={r.gtfsRoute.id}>{ r.gtfsRoute.id }</div>) }
+                    <h4>Unmatched OSM</h4>
+                    { routesMatch?.unmatchedOsm?.map(r => <div key={ r.osmRoute.ref }>{ r.osmRoute.ref } { r.osmRoute.name }</div>) }
+                    <h4>OSM Routes without ref</h4>
+                    { routesMatch?.noRefRelations?.map(r => <div key={ r.id }>{ r.tags.name }</div>) }
                 </div>
 
                 <div className={classNames('tab', 'changes-tab', {active: activeTab === 'changes'})}>
