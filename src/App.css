@@ -28,6 +28,7 @@ html, body, #root {
 .tab-header {
     margin-top: 0.5em;
     margin-bottom: 1em;
+    padding-left: 0.5em;
 }
 .tab-header span {
     padding: 0.25em 0.5em 0.25em 0.5em;
@@ -39,17 +40,15 @@ html, body, #root {
     display: none;
 }
 .tab.active {
-    display: block;
-}
-
-.tab.stops-tab.active {
     height: min-content;
     display: flex;
     flex-direction: column;
 }
-
 .scroll-pane {
     height: 25em;
     flex: 1 0 auto;
     overflow-y: auto;
+}
+.tab > div {
+    padding-left: 0.5em;
 }

@@ -204,20 +204,21 @@ function App() {
                 </div>
 
                 <div className={classNames('tab', 'import-tab', {active: activeTab === 'import'})}>
-                    <GTFSLoad gtfsData={gtfsData} onDataLoaded={onGtfsLoaded} />
+                    <div>
+                        <GTFSLoad gtfsData={gtfsData} onDataLoaded={onGtfsLoaded} />
 
-                    <QeryOSM setOSMData={handleOsmData} {...{gtfsData, osmData}}></QeryOSM>
+                        <QeryOSM setOSMData={handleOsmData} {...{gtfsData, osmData}}></QeryOSM>
 
-                    { gtfsTags && <div><h4>Posible GTFS stop code tags</h4> {possibleOSMRefTags}</div> }
-                    { gtfsData && <MatchSettings {...{gtfsTags, matchSettings, setMatchSettings, matchDone, runMatch}}/> }
+                        { gtfsTags && <div><h4>Posible GTFS stop code tags</h4> {possibleOSMRefTags}</div> }
+                        { gtfsData && <MatchSettings {...{gtfsTags, matchSettings, setMatchSettings, matchDone, runMatch}}/> }
 
-                    { osmData && <button disabled={matchDone} onClick={runMatch}>Run match</button>}
+                        { osmData && <button disabled={matchDone} onClick={runMatch}>Run match</button>}
 
-                    <h4>Template tags for platform</h4>
-                    <TagEditor 
-                        tags={platformTemplate} 
-                        onChange={t => { setPlatformTemplate(t); }} />
-
+                        <h4>Template tags for platform</h4>
+                        <TagEditor 
+                            tags={platformTemplate} 
+                            onChange={t => { setPlatformTemplate(t); }} />
+                    </div>
                 </div>
 
                 <div className={classNames('tab', 'stops-tab', {active: activeTab === 'stops'})}>
@@ -239,18 +240,22 @@ function App() {
                 </div>
 
                 <div className={classNames('tab', 'routes-tab', {active: activeTab === 'routes'})}>
-                    <h4>Matched</h4>
-                    { routesMatch?.matched?.map(r => <div key={r.gtfsRoute.id}>{ r.gtfsRoute.id } { r.osmRoute.name }</div>) }
-                    <h4>Unmatched GTFS</h4>
-                    { routesMatch?.unmatchedGtfs?.map(r => <div key={r.gtfsRoute.id}>{ r.gtfsRoute.id }</div>) }
-                    <h4>Unmatched OSM</h4>
-                    { routesMatch?.unmatchedOsm?.map(r => <div key={ r.osmRoute.ref }>{ r.osmRoute.ref } { r.osmRoute.name }</div>) }
-                    <h4>OSM Routes without ref</h4>
-                    { routesMatch?.noRefRelations?.map(r => <div key={ r.id }>{ r.tags.name }</div>) }
+                    <div className={'scroll-pane'}>
+                        <h4>Matched</h4>
+                        { routesMatch?.matched?.map(r => <div key={r.gtfsRoute.id}>{ r.gtfsRoute.id } { r.osmRoute.name }</div>) }
+                        <h4>Unmatched GTFS</h4>
+                        { routesMatch?.unmatchedGtfs?.map(r => <div key={r.gtfsRoute.id}>{ r.gtfsRoute.id }</div>) }
+                        <h4>Unmatched OSM</h4>
+                        { routesMatch?.unmatchedOsm?.map(r => <div key={ r.osmRoute.ref }>{ r.osmRoute.ref } { r.osmRoute.name }</div>) }
+                        <h4>OSM Routes without ref</h4>
+                        { routesMatch?.noRefRelations?.map(r => <div key={ r.id }>{ r.tags.name }</div>) }
+                    </div>
                 </div>
 
                 <div className={classNames('tab', 'changes-tab', {active: activeTab === 'changes'})}>
-                    <Changes {...{osmData}} />
+                    <div>
+                        <Changes {...{osmData}} />
+                    </div>
                 </div>
             </div>
 
