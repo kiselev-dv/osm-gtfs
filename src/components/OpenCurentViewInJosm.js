@@ -26,8 +26,8 @@ export default function OpenCurentViewInJosm({filteredMatches}) {
 
     const map  = useContext(MapContext);
 
-    const cb = useCallback(() => {
-        console.log('OpenCurentViewInJosm', filteredMatches, map);
+    controlInstance.onClick = () => {
+        console.log('OpenCurentViewInJosm', filteredMatches);
         if (filteredMatches && map) {
             const bounds = map.getBounds();
             const osmElements = [];
@@ -51,9 +51,7 @@ export default function OpenCurentViewInJosm({filteredMatches}) {
 
             loadInJOSM(osmElements, true);
         }
-    }, [map, filteredMatches?.length]);
-
-    controlInstance.onClick = cb;
+    };
 
     useEffect(() => {
         if (map) {
