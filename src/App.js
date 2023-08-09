@@ -22,6 +22,7 @@ import { filterTagStatsByRe, findMostPopularTag } from './services/utils';
 import OpenCurentViewInJosm from './components/OpenCurentViewInJosm';
 import { TagEditor } from './components/OsmTags';
 import RouteMatch from './components/RouteMatch';
+import { applyAction } from './models/editor';
 
 function App() {
 
@@ -94,6 +95,7 @@ function App() {
     
     const dataBBOX = gtfsData && gtfsData.bbox;
 
+//-----------------------------------------------------    
     // Editor state
     const [editSubj, setEditSubj] = useState();
     const doneEdit = useCallback(() => {
@@ -105,8 +107,22 @@ function App() {
 
     // Show osm stops on map to match them with GTFS Stop
     const [rematchSubj, setRematchSubj] = useState();
-    const assignMatch = useCallback(osmElement => {
-        const { match, elementRole } = rematchSubj;
+    const assignMatch = useCallback((newMatch, subj) => {
+        const { match, elementRole: role } = rematchSubj;
+
+        const action = {
+            action: 'set_match',
+            match, 
+            role,
+            options: {platformTemplate},
+            data: { newMatch }
+        };
+
+        if (applyAction(action, osmData, matchData)) {
+            console.log('Assigned match', match);
+            setMatchData(matchData);
+            selectMatch({...match});
+        }
 
         setRematchSubj(undefined);
         setEditSubj(undefined);
@@ -115,57 +131,42 @@ function App() {
     const [newStopSubj, setNewStopSubj] = useState();
     const assignNewStop = useCallback(latlng => {
         const {match, role} = newStopSubj;
-        
-        const name = match?.gtfsStop?.name;
-        const code = match?.gtfsStop?.code;
+        const action = {
+            action: 'create_new',
+            match, 
+            role,
+            options: {platformTemplate},
+            data: { latlng }
+        };
 
-        const gtfsRefTag =  matchData.settings.refTag;
-
-        const osmElement = osmData.createNewNode(latlng, {
-            name: name,
-            [gtfsRefTag]: code,
-            ...platformTemplate
-        });
-
-        const stopPosition = undefined;
-        const platform = osmElement;
-
-        const osmStop = new OsmStop(stopPosition, platform);
-
-        if (matchData.setMatch(match, osmStop)) {
+        if (applyAction(action, osmData, matchData)) {
             setMatchData(matchData);
             selectMatch({...match});
         }
-
+        
         setNewStopSubj(undefined);
     }, [newStopSubj, setNewStopSubj, platformTemplate, osmData, matchData, selectMatch]);
 
     const [moveMatchSubj, setMoveMatchSubj] = useState();
     const onPositionUpdate = useCallback((latlng, subj) => {
-        const osmStop = subj.match.osmStop;
-        const osmElement = osmStop?.[subj.role];
 
-        // Always true atm
-        if (osmElement.type === 'node') {
-            osmData.setNodeLatLng(latlng, osmElement);
+        const action = {
+            action: 'set_position',
+            match: subj.match, 
+            data: { latlng }
+        };
 
-            selectMatch(subj.match);
-            setHighlightedMatchTrip({...highlightedMatchTrip});
-        }
-        if (osmElement.type === 'way') {
-            // Move all nodes of a way
-            osmData.setWayLatLng(latlng, osmElement);
+        applyAction(action, osmData, matchData);
 
-            selectMatch(subj.match);
-            setHighlightedMatchTrip({...highlightedMatchTrip});
-        }
+        selectMatch(subj.match);
+        setHighlightedMatchTrip({...highlightedMatchTrip});
 
         setMoveMatchSubj(undefined);
 
     }, [setMoveMatchSubj, osmData, matchData, selectMatch, 
         highlightedMatchTrip, setHighlightedMatchTrip, 
         filteredMatches, setFilteredMatches]);
-
+//-----------------------------------------------------
     const possibleOSMRefTags = Object.entries(gtfsTags || {})
         .map(([key, val]) => <div key={key}><code>{key}</code> ({val} objects) </div>);
 

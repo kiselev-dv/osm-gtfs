@@ -5,21 +5,24 @@ export default function RematchController({rematchSubj, assignMatch, matchData, 
     
     const osmOrphants = matchData.unmatchedOsm;
 
-    const onSelect = useCallback(match => {
-        assignMatch(match[rematchSubj.role]);
+    const onSelect = useCallback(selection => {
+        console.log('Selected rematch', selection);
+        assignMatch(selection, rematchSubj);
     }, [assignMatch, rematchSubj]);
 
     const markers = osmOrphants.map(match => 
         <MapMatchMarker 
-            key={match.id} selectMatch={onSelect} 
-            {...{match, undefined}} />
+            key={match.id} 
+            selectMatch={onSelect} 
+            match={match}
+            />
     );
 
     return <>
         <MapMatchMarker 
             key={rematchSubj.match.id} 
             match={rematchSubj.match} 
-            selectedMatch={rematchSubj.match} 
+            selectedMatch={rematchSubj.match}
         />
         { markers}
     </>

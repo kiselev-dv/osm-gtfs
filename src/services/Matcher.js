@@ -137,6 +137,27 @@ export class StopsMatch {
 
         return false;
     }
+
+    setMatchToMatch(match, assignedMatch) {
+        const osmStop = assignedMatch.osmStop;
+
+        if (!match.gtfsStop || !osmStop) {
+            return false;
+        }
+
+        if (this.setMatch(match, osmStop)) {
+            this.unmatchedGtfs = this.unmatchedGtfs.filter(m => m.gtfsStop.id !== match.gtfsStop.id);
+            
+            const matchToRemove = this.unmatchedOsm.find(m => m.osmStop !== osmStop);
+            console.log('matchToRemove', matchToRemove);
+
+            this.unmatchedOsm = this.unmatchedOsm.filter(m => m.osmStop !== osmStop);
+
+            return true;
+        }
+
+        return false;
+    }
 }
 
 /**
