@@ -3,5 +3,10 @@ html,body,#root{height:100%;padding:0;margin:0}.main-container{display:flex;flex
 #map{min-height:400px;height:100%}
 .dropzone{width:400px;border-radius:5px;border:1px solid burlywood;margin-bottom:10px;text-align:center;cursor:pointer}
 .match-list{margin-top:1em;padding-top:0.5em;height:40%;flex:1 0 auto;display:flex;flex-direction:column}.stop-match{cursor:pointer}.stop-match.selected{font-weight:bold}.match-list-filters label{margin-inline-end:0.25em}.match-list-filters input[type="checkbox"]{vertical-align:baseline}.match-mark{display:inline-block;border-radius:0.3em;width:0.6em;height:0.6em;vertical-align:-20%;margin-right:0.25em;margin-left:0.25em}.match-list .scroll-pane{margin-top:0.5em;border-top:1px solid #999}
+div.help{width:400px}.help code{color:#6B4630}
+.tag-actions span.material-icons{font-size:1em;color:lightgrey}.tag-actions span.material-icons:hover{color:inherit;cursor:pointer}.osm-tags-table input{border:1px solid #666}.protected input{background-color:#ddd}.invalid input{background-color:#dc9e9e}.osm-tag-delete span:hover{color:red}
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');.icon-check-box{cursor:pointer;user-select:none;vertical-align:middle;font-size:1.25em;display:inline-block;border-radius:0.1em;color:black;background-color:unset}.icon-check-box.checked{font-size:0.9em;background-color:#0075ff;color:white;margin-inline-end:0.2em;margin-inline-start:0.2em}.icon-check-box.checked:hover{background-color:#015dc6}
+.trip-name{margin-inline-start:0.25em;cursor:pointer}
 .trip-path{stroke-dasharray:1 12 6}
 .changes-tab span{margin-left:0.25em;margin-right:0.25em}.change-element-id{width:5.5em;display:inline-block}.change-element-type{width:2em;display:inline-block}
+.trips-info{font-size:0.75em;margin-bottom:0.5em}
