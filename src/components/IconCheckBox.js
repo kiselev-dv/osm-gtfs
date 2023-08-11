@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import classNames from 'classnames';
 
-import 'icon-check-box.css';
+import './icon-check-box.css';
 
 export default function IconCheckBox({icon, alt, className, checked, onChange}) {
 

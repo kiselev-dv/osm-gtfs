@@ -1,6 +1,6 @@
 import React from "react";
 
-import "RouteMatch.css"
+import "./RouteMatch.css"
 
 export default function RouteMatch({routeMatch}) {
     const {gtfsRoute, osmRoute} = routeMatch;

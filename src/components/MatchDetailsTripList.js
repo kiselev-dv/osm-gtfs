@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import IconCheckBox from './IconCheckBox';
 
-import 'match-details-trip-list.css';
+import './match-details-trip-list.css';
 
 export default function MatchDetailsTripList({gtfsStop, gtfsData, highlightedTrip, setHighlightedTrip}) {
 

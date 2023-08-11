@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from 'react';
 
-import 'help.css';
+import './help.css';
 
 import mdHelpRefCode from '../help/HelpRefCode.md';
 import mdHelpNameTemplate from '../help/HelpNameTemplate.md';

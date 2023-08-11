@@ -13,7 +13,7 @@ import OSMData from '../services/OSMData';
  * @property {OSMData} osmData
  */
 
-import "OsmTags.css"
+import "./OsmTags.css"
 import classNames from 'classnames';
 
 /**
