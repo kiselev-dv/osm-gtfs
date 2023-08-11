@@ -1,33 +1,35 @@
 
 import React, { useCallback, useState } from 'react';
+import { CREATE_NEW, SET_MATCH, SET_POSITION } from '../models/editor';
 
 export default function MatchEditor({
-    match, elementRole, 
-    rematchSubj, setRematchSubj,
-    moveMatchSubj, setMoveMatchSubj,
-    newStopSubj, setNewStopSubj
+    match, elementRole,
+    editSubj, setEditSubj,
 }) {
 
     const reassignButtonHandler = useCallback(() => {
-        setRematchSubj({
+        setEditSubj({
             match,
+            action: SET_MATCH,
             role: elementRole
         });
-    }, [match, elementRole, setRematchSubj]);
+    }, [match, elementRole, setEditSubj]);
     
     const createButtonHandler = useCallback(() => {
-        setNewStopSubj({
+        setEditSubj({
             match,
+            action: CREATE_NEW,
             role: elementRole
         });
-    }, [match, elementRole, setNewStopSubj]);
+    }, [match, elementRole]);
     
     const moveButtonHandler = useCallback(() => {
-        setMoveMatchSubj({
+        setEditSubj({
             match,
+            action: SET_POSITION,
             role: elementRole
         });
-    }, [match, elementRole, setMoveMatchSubj]);
+    }, [match, elementRole]);
 
     const osmStop = match.osmStop;
     const gtfsStop = match.gtfsStop;
@@ -39,20 +41,20 @@ export default function MatchEditor({
         <div>
             { !osmStop && 
             <button onClick={ createButtonHandler }
-                disabled={newStopSubj?.match === match}>
+                disabled={editSubj?.match === match}>
                 Create
             </button> }
             
             { osmElement && 
             <button 
-                disabled={moveMatchSubj?.match === match}
+                disabled={editSubj?.match === match}
                 onClick={moveButtonHandler}>
                 Move
             </button> }
 
             {!orphantOsm && 
             <button 
-                disabled={rematchSubj?.match === match} 
+                disabled={editSubj?.match === match} 
                 onClick={reassignButtonHandler}
             >
                 {!osmElement ? "Assign" : "Reassign"}

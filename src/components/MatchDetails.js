@@ -6,10 +6,8 @@ import classNames from 'classnames';
 
 export default function MatchDetails({
     match, osmData, gtfsData, 
-    highlightedTrip, setHighlightedTrip, 
-    rematchSubj, setRematchSubj,
-    moveMatchSubj, setMoveMatchSubj,
-    newStopSubj, setNewStopSubj
+    highlightedTrip, setHighlightedTrip,
+    editSubj, setEditSubj,
 }) {
 
     const {osmStop, gtfsStop} = match;
@@ -51,18 +49,11 @@ export default function MatchDetails({
         <h4>OSM Stop platform:</h4>
         { platform && <OSMElementTags osmData={osmData} osmElement={platform} />}
 
-        { <MatchEditor 
-            elementRole={'platform'} {...{
-                match, osmData, gtfsStop, 
-                rematchSubj, setRematchSubj,
-                moveMatchSubj, setMoveMatchSubj,
-                newStopSubj, setNewStopSubj
-            }} />}
-
-        {/* <h4>OSM Stop position:</h4>
-        { stopPosition && <OSMElementTags osmData={osmData} elementRole={'stopPosition'} />}
-
-        { <MatchEditor elementRole={'stopPosition'} {...{match, osmData, gtfsStop, rematchSubj, setRematchSubj}} />} */}
+        <MatchEditor elementRole={'platform'} 
+            {...{
+                match, osmData, gtfsStop,
+                editSubj, setEditSubj,
+            }} />
 
     </div>
 }

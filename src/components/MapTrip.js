@@ -23,7 +23,7 @@ export default function MapTrip({matchTrip}) {
             const latlngs = matchTrip.stopMatchSequence.map(match => {
                 const { gtfsStop, osmStop } = match;
                 const stop = osmStop || gtfsStop;
-                return stop ? [stop.lat, stop.lon] : undefined
+                return stop ? stop.getLonLat() : undefined
             }).filter(ll => ll !== undefined);
 
             const pline = L.polyline(latlngs, {

@@ -168,6 +168,7 @@ export default class OSMData {
     createNewNode({lat, lng}, tags) {
         
         const element = {
+            // In OSM data files negative IDs are used for newly created elements
             id: this.newIdCounter--,
             type: 'node',
             lon: lng,
@@ -178,7 +179,7 @@ export default class OSMData {
         this.addElement(element);
 
         this.changes.push(
-            { 'element': element, action: 'create' }
+            { 'element': element, action: ['create'] }
         );
 
         return element;

@@ -1,15 +1,13 @@
 import React, { useCallback, useContext, useEffect } from "react";
 import { MapContext, layers } from "./Map";
 
-export default function NewStopController({newStopSubj, assignNewStop}) {
+export default function NewStopController({editSubj, doneEdit}) {
     
     const map = useContext(MapContext);
 
-    const mapClick = useCallback((evnt) => {
-
-        assignNewStop(evnt.latlng);
-
-    }, [assignNewStop, map]);
+    const mapClick = useCallback(({latlng}) => {
+        doneEdit && doneEdit({latlng})
+    }, [doneEdit, map]);
 
     useEffect(() => {
         if (map) {
@@ -23,7 +21,6 @@ export default function NewStopController({newStopSubj, assignNewStop}) {
             };
         }
     }, [map, mapClick]);
-
 
     return <></>
 }

@@ -22,7 +22,7 @@ import { filterTagStatsByRe, findMostPopularTag } from './services/utils';
 import OpenCurentViewInJosm from './components/OpenCurentViewInJosm';
 import { TagEditor } from './components/OsmTags';
 import RouteMatch from './components/RouteMatch';
-import { applyAction } from './models/editor';
+import { CREATE_NEW, SET_MATCH, SET_POSITION, applyAction } from './models/editor';
 
 function App() {
 
@@ -95,82 +95,37 @@ function App() {
     
     const dataBBOX = gtfsData && gtfsData.bbox;
 
-//-----------------------------------------------------    
     // Editor state
     const [editSubj, setEditSubj] = useState();
-    const doneEdit = useCallback(() => {
-        const {action, match, elementRole} = editSubj;
+    const doneEdit = useCallback(editData => {
+        const {action, match, role} = editSubj;
 
+        const actionDef = {
+            action,
+            match, 
+            role,
+            options: { platformTemplate },
+            data: editData
+        };
+
+        const { success, matchDataUpdated } = applyAction(actionDef, osmData, matchData);
+
+        if (success && matchDataUpdated) {
+            setMatchData(matchData);
+            selectMatch({...match});
+        }
 
         setEditSubj(undefined);
     }, [editSubj, setEditSubj]);
 
-    // Show osm stops on map to match them with GTFS Stop
-    const [rematchSubj, setRematchSubj] = useState();
-    const assignMatch = useCallback((newMatch, subj) => {
-        const { match, elementRole: role } = rematchSubj;
-
-        const action = {
-            action: 'set_match',
-            match, 
-            role,
-            options: {platformTemplate},
-            data: { newMatch }
-        };
-
-        if (applyAction(action, osmData, matchData)) {
-            console.log('Assigned match', match);
-            setMatchData(matchData);
-            selectMatch({...match});
-        }
-
-        setRematchSubj(undefined);
-        setEditSubj(undefined);
-    }, [editSubj, setEditSubj, rematchSubj, setRematchSubj]);
-
-    const [newStopSubj, setNewStopSubj] = useState();
-    const assignNewStop = useCallback(latlng => {
-        const {match, role} = newStopSubj;
-        const action = {
-            action: 'create_new',
-            match, 
-            role,
-            options: {platformTemplate},
-            data: { latlng }
-        };
-
-        if (applyAction(action, osmData, matchData)) {
-            setMatchData(matchData);
-            selectMatch({...match});
-        }
-        
-        setNewStopSubj(undefined);
-    }, [newStopSubj, setNewStopSubj, platformTemplate, osmData, matchData, selectMatch]);
-
-    const [moveMatchSubj, setMoveMatchSubj] = useState();
-    const onPositionUpdate = useCallback((latlng, subj) => {
-
-        const action = {
-            action: 'set_position',
-            match: subj.match, 
-            data: { latlng }
-        };
-
-        applyAction(action, osmData, matchData);
-
-        selectMatch(subj.match);
-        setHighlightedMatchTrip({...highlightedMatchTrip});
-
-        setMoveMatchSubj(undefined);
-
-    }, [setMoveMatchSubj, osmData, matchData, selectMatch, 
-        highlightedMatchTrip, setHighlightedMatchTrip, 
-        filteredMatches, setFilteredMatches]);
-//-----------------------------------------------------
     const possibleOSMRefTags = Object.entries(gtfsTags || {})
         .map(([key, val]) => <div key={key}><code>{key}</code> ({val} objects) </div>);
+        
+    const doNew = editSubj?.action === CREATE_NEW;
+    const doMove = editSubj?.action === SET_POSITION;
+    const doRematch = editSubj?.action === SET_MATCH;
 
-    const hideMarkers = rematchSubj || newStopSubj;
+    const hideMarkers = doNew || doRematch;
 
     const matchMarkers = filteredMatches?.map(match => 
         <MapMatchMarker key={match.id} {...{match, selectedMatch, selectMatch}}></MapMatchMarker>
@@ -227,10 +182,8 @@ function App() {
                     {selectedMatch &&
                         <MatchDetails match={selectedMatch} 
                             {...{osmData, gtfsData, 
-                                highlightedTrip, setHighlightedTrip, 
-                                rematchSubj, setRematchSubj,
-                                moveMatchSubj, setMoveMatchSubj,
-                                newStopSubj, setNewStopSubj
+                                highlightedTrip, setHighlightedTrip,
+                                editSubj, setEditSubj
                             }}/>
                     }
 
@@ -271,12 +224,12 @@ function App() {
                     <OpenCurentViewInJosm filteredMatches={filteredMatches}/>
                     <MapTrip matchTrip={highlightedMatchTrip} />
                     { !hideMarkers && matchMarkers }
-                    {rematchSubj && <RematchController 
-                        {...{rematchSubj, assignMatch, matchData, osmData}}/> }
-                    {newStopSubj && <NewStopController
-                        {...{ newStopSubj, assignNewStop }}/> }
-                    {moveMatchSubj && <StopMoveController
-                        {...{ moveMatchSubj, onPositionUpdate }}/> }
+                    { doRematch && <RematchController 
+                        {...{editSubj, doneEdit, matchData, osmData}}/> }
+                    { doNew && <NewStopController
+                        {...{editSubj, doneEdit}}/> }
+                    { doMove && <StopMoveController
+                        {...{editSubj, doneEdit}}/> }
                 </Map>}
             </div>
         </div>

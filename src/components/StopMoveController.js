@@ -2,14 +2,14 @@ import React, { useContext, useEffect } from 'react';
 
 import { MapContext } from './Map';
 
-export default function StopMoveController({moveMatchSubj, onPositionUpdate}) {
+export default function StopMoveController({doneEdit}) {
 
     const map = useContext(MapContext);
 
     useEffect(() => {
         if (map) {
             const clickHandler = ({latlng}) => {
-                onPositionUpdate && onPositionUpdate(latlng, moveMatchSubj);
+                doneEdit && doneEdit({latlng});
             };
 
             map.on('click', clickHandler);
@@ -18,7 +18,7 @@ export default function StopMoveController({moveMatchSubj, onPositionUpdate}) {
                 map.off('click', clickHandler);
             };
         }
-    }, [map, moveMatchSubj, onPositionUpdate]);
+    }, [map, doneEdit]);
 
     return <></>
 }

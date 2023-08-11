@@ -1,7 +1,12 @@
+import OsmStop from "./OsmStop";
+
+export const SET_MATCH = 'set_match';
+export const CREATE_NEW = 'create_new';
+export const SET_POSITION = 'set_position';
 
 export function applyAction({action, match, role, options, data}, osmData, matchData) {
 
-    if (action === 'create_new') {
+    if (action === CREATE_NEW) {
         const name = match?.gtfsStop?.name;
         const code = match?.gtfsStop?.code;
     
@@ -22,11 +27,16 @@ export function applyAction({action, match, role, options, data}, osmData, match
         const platform = osmElement;
     
         const osmStop = new OsmStop(stopPosition, platform);
-    
-        return matchData.setMatch(match, osmStop);
+        const matchSet = matchData.setMatch(match, osmStop);
+
+        return {
+            success: matchSet,
+            matchDataUpdated: matchSet
+        }
     }
 
-    if (action === 'set_position') {
+    if (action === SET_POSITION) {
+        const {latlng} = data;
         const osmStop = match.osmStop;
         const osmElement = osmStop?.[role];
 
@@ -38,16 +48,24 @@ export function applyAction({action, match, role, options, data}, osmData, match
             // Move all nodes of a way
             osmData.setWayLatLng(latlng, osmElement);
         }
+
+        return {
+            success: true,
+            matchDataUpdated: false,
+            osmDataUpdated: true
+        }
     }
 
-    if (action === 'set_match') {
+    if (action === SET_MATCH) {
 
         const { newMatch } = data;
         const newOsmStop = newMatch.osmStop;
         const osmElement = newOsmStop?.[role || 'platform'];
 
         if (!newOsmStop || !osmElement) {
-            return false;
+            return {
+                success: false
+            };
         }
 
         const code = match?.gtfsStop?.code;
@@ -65,6 +83,11 @@ export function applyAction({action, match, role, options, data}, osmData, match
         osmData.setElementTags(newTags, osmElement);
 
         return matchData.setMatchToMatch(match, newMatch);
+    }
+
+    return {
+        success: false,
+        error: 'unknow_action'
     }
 
 }

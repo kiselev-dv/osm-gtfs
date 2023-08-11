@@ -1,14 +1,15 @@
 import React, { useCallback, useEffect } from "react";
 import MapMatchMarker from "./MapMatchMarker";
 
-export default function RematchController({rematchSubj, assignMatch, matchData, osmData}) {
+export default function RematchController({editSubj, doneEdit, matchData}) {
     
     const osmOrphants = matchData.unmatchedOsm;
 
     const onSelect = useCallback(selection => {
-        console.log('Selected rematch', selection);
-        assignMatch(selection, rematchSubj);
-    }, [assignMatch, rematchSubj]);
+        doneEdit({
+            newMatch: selection
+        });
+    }, [editSubj, doneEdit]);
 
     const markers = osmOrphants.map(match => 
         <MapMatchMarker 
@@ -20,9 +21,9 @@ export default function RematchController({rematchSubj, assignMatch, matchData, 
 
     return <>
         <MapMatchMarker 
-            key={rematchSubj.match.id} 
-            match={rematchSubj.match} 
-            selectedMatch={rematchSubj.match}
+            key={editSubj.match.id} 
+            match={editSubj.match} 
+            selectedMatch={editSubj.match}
         />
         { markers}
     </>
