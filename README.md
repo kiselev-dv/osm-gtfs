@@ -1,9 +1,9 @@
 ## Install
 ```bash
-npm install --legacy-peer-deps
+npm install
 ```
 
-## Run
+## Dev server
 ```bash
 npm start
 ```
