@@ -4,6 +4,8 @@ import MatchDetailsTripList from './MatchDetailsTripList';
 import MatchEditor from './MatchEditor';
 import classNames from 'classnames';
 
+import "./MatchDetails.css";
+
 export default function MatchDetails({
     match, osmData, gtfsData, 
     highlightedTrip, setHighlightedTrip,

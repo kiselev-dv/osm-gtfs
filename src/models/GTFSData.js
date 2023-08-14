@@ -13,13 +13,17 @@ export default class GTFSData {
         this.stopToTrips = {};
     }
 
+    
     loadStops(rawdata) {
+        let stopDataSample = null;
         Papa.parse(rawdata, {
             header: true,
             step: ({data: stopData}) => {
                 if ( !stopData.stop_id ) {
                     return;
                 }
+
+                stopDataSample === null && (stopDataSample = stopData);
 
                 const stop = new GTFSStop(stopData);
 
@@ -33,31 +37,38 @@ export default class GTFSData {
                 }
             }
         });
+        console.log('Stop raw data sample', stopDataSample);
 
         this.bbox = new BBOX(this.stops[0].lon, this.stops[0].lat);
         this.stops.forEach(stop => this.bbox.extend(stop.lon, stop.lat));
     }
 
     loadRoutes(rawRoutes, rawTrips, rawStopTimes) {
+        let routeDataSample = null;
         Papa.parse(rawRoutes, {
             header: true,
             step: ({data: routeData}) => {
+                routeDataSample === null && (routeDataSample = routeData);
                 const route = new GTFSRoute(routeData);
                 if (route.id) {
                     this.routes[route.id] = route;
                 }
             }
         });
+        console.log('Route raw data sample', routeDataSample);
         
         const tripById = {};
 
+        let tripDataSample = null;
         Papa.parse(rawTrips, {
             header: true,
             step: ({data: tripData}) => {
+                tripDataSample === null && (tripDataSample = tripData);
                 const trip = new GTFSTrip(tripData);
                 tripById[trip.id] = trip;
             }
         });
+        console.log('Trip raw data sample', tripDataSample);
 
         Papa.parse(rawStopTimes, {
             header: true,

@@ -2,3 +2,7 @@
     margin-inline-start: 0.25em;
     cursor: pointer;
 }
+
+.route-name {
+    margin-inline-start: 0.25em;
+}

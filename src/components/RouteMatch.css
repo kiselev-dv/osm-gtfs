@@ -3,3 +3,11 @@
     font-size: 0.75em;
     margin-bottom: 0.5em;
 }
+
+.route-match span ~ span {
+    margin-left: 0.4em;
+}
+
+.trips-info span ~ span {
+    margin-left: 0.5em;
+}

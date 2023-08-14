@@ -29,10 +29,12 @@ export default function MatchDetailsTripList({gtfsStop, gtfsData, highlightedTri
     ) : <></>;
 }
 
-function MatchDetailsTripListElement({gtfsTrip, selected, onSelectionChange}) {
+function MatchDetailsTripListElement({gtfsTrip, selected, gtfsData, onSelectionChange}) {
     const handleCheckboxChange = useCallback(checked => {
         onSelectionChange && onSelectionChange(gtfsTrip, checked);
     }, [gtfsTrip, onSelectionChange]);
+
+    const route = gtfsData.routes[gtfsTrip.routeId];
 
     return (<div className={'stop-trip-list-item'}>
         <IconCheckBox icon={'filter_list'} 
@@ -43,8 +45,11 @@ function MatchDetailsTripListElement({gtfsTrip, selected, onSelectionChange}) {
             checked={selected} 
             onChange={handleCheckboxChange} 
         />
-        <span className={'trip-name'}>
+        {gtfsTrip.headSign && <span className={'trip-name'}>
         { gtfsTrip.headSign }
-        </span>
+        </span>}
+        {route && <span className={'route-name'}>
+        { `(${route.shortName} - ${route.longName})` }    
+        </span>}
     </div>);
 }

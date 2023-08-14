@@ -11,6 +11,6 @@ export default function IconCheckBox({icon, alt, className, checked, onChange}) 
         onChange && onChange(checked === undefined ? undefined : !checked);
     }, [checked, onChange]);
 
-    return <span onClick={handleClick} className={cssClass}>{ icon }</span>
+    return <i onClick={handleClick} className={cssClass}>{ icon }</i>
 
 }
