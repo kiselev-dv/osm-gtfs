@@ -3,6 +3,6 @@
     overflow-y: auto;
 }
 
-button ~ button {
+.match-details button + button {
     margin-left: 0.5em;
 }

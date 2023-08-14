@@ -4,10 +4,10 @@
     margin-bottom: 0.5em;
 }
 
-.route-match span ~ span {
+.route-match span + span {
     margin-left: 0.4em;
 }
 
-.trips-info span ~ span {
+.trips-info span + span {
     margin-left: 0.5em;
 }

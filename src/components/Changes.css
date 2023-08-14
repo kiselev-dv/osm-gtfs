@@ -12,3 +12,6 @@
     width: 2em;
     display: inline-block;
 }
+.changes-tab button + button {
+    margin-left: 0.5em;
+}
