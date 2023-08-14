@@ -21,7 +21,7 @@ export default function MatchEditor({
             action: CREATE_NEW,
             role: elementRole
         });
-    }, [match, elementRole]);
+    }, [match, elementRole, setEditSubj]);
     
     const moveButtonHandler = useCallback(() => {
         setEditSubj({
@@ -29,7 +29,11 @@ export default function MatchEditor({
             action: SET_POSITION,
             role: elementRole
         });
-    }, [match, elementRole]);
+    }, [match, elementRole, setEditSubj]);
+
+    const cancelEditHandler = useCallback(() => {
+        setEditSubj(undefined);
+    }, [setEditSubj]);
 
     const osmStop = match.osmStop;
     const gtfsStop = match.gtfsStop;
@@ -37,24 +41,30 @@ export default function MatchEditor({
     const osmElement = osmStop?.[elementRole];
     const orphantOsm = osmStop && !gtfsStop;
 
+    const editIsActive = editSubj && editSubj?.match === match;
     return (
         <div>
+            { editIsActive && 
+            <button onClick={ cancelEditHandler }>
+                Cancel
+            </button> }
+
             { !osmStop && 
             <button onClick={ createButtonHandler }
-                disabled={editSubj?.match === match}>
+                disabled={editIsActive}>
                 Create
             </button> }
             
             { osmElement && 
             <button 
-                disabled={editSubj?.match === match}
+                disabled={editIsActive}
                 onClick={moveButtonHandler}>
                 Move
             </button> }
 
             {!orphantOsm && 
             <button 
-                disabled={editSubj?.match === match} 
+                disabled={editIsActive} 
                 onClick={reassignButtonHandler}
             >
                 {!osmElement ? "Assign" : "Reassign"}

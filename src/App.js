@@ -64,6 +64,30 @@ function App() {
         setHighlightedMatchTrip(stopMatchSequence);
     }, [setHighlightedGtfsTrip, setHighlightedMatchTrip, matchData]);
 
+    const handleSelectNextInTrip = useCallback((match, gtfsTrip) => {
+        const inx = gtfsTrip.stopSequence.findIndex(stop => stop.id === match.gtfsStop.id);
+        if (inx >= 0) {
+            const targetId = gtfsTrip.stopSequence[inx + 1]?.id;
+            const targetMatch = matchData.matchByGtfsId[targetId];
+            if (targetMatch) {
+                selectMatch(targetMatch);
+            }
+        }
+        
+    }, [matchData, selectMatch]);
+    
+    const handleSelectPrevInTrip = useCallback((match, gtfsTrip) => {
+        const inx = gtfsTrip.stopSequence.findIndex(stop => stop.id === match.gtfsStop.id);
+        if (inx >= 0) {
+            const targetId = gtfsTrip.stopSequence[inx - 1]?.id;
+            const targetMatch = matchData.matchByGtfsId[targetId];
+            if (targetMatch) {
+                selectMatch(targetMatch);
+            }
+        }
+        
+    }, [matchData, selectMatch]);
+
     const runMatch = useCallback(() => {
         const match = new StopsMatch(matchSettings, gtfsData, osmData);
 
@@ -181,8 +205,9 @@ function App() {
                 <div className={classNames('tab', 'stops-tab', {active: activeTab === 'stops'})}>
                     {selectedMatch &&
                         <MatchDetails match={selectedMatch} 
-                            {...{osmData, gtfsData, 
+                            {...{osmData, gtfsData, selectMatch, matchData,
                                 highlightedTrip, setHighlightedTrip,
+                                handleSelectNextInTrip, handleSelectPrevInTrip,
                                 editSubj, setEditSubj
                             }}/>
                     }

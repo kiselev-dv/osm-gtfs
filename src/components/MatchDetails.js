@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import OSMElementTags from './OsmTags';
 import MatchDetailsTripList from './MatchDetailsTripList';
 import MatchEditor from './MatchEditor';
@@ -7,9 +7,10 @@ import classNames from 'classnames';
 import "./MatchDetails.css";
 
 export default function MatchDetails({
-    match, osmData, gtfsData, 
+    match, osmData, gtfsData,
     highlightedTrip, setHighlightedTrip,
     editSubj, setEditSubj,
+    handleSelectNextInTrip, handleSelectPrevInTrip
 }) {
 
     const {osmStop, gtfsStop} = match;
@@ -20,12 +21,26 @@ export default function MatchDetails({
     const name = osmStop?.getName() || gtfsStop?.name;
     const gtfsCode = gtfsStop?.code;
 
+    const nextInTripHandler = useCallback(() => {
+        if (match && highlightedTrip && handleSelectNextInTrip) {
+            handleSelectNextInTrip(match, highlightedTrip);
+        }
+    }, [match, highlightedTrip, handleSelectNextInTrip]);
+    
+    const prevInTripHandler = useCallback(() => {
+        if (match && highlightedTrip && handleSelectPrevInTrip) {
+            handleSelectPrevInTrip(match, highlightedTrip);
+        }
+    }, [match, highlightedTrip, handleSelectPrevInTrip]);
+
     return <div className={classNames('match-details')}>
         <h4>{ name }</h4>
         { gtfsStop && <div>
             <span>GTFS Stop code: <code>{gtfsCode || 'none'}</code>, </span>
             <span>GTFS Stop id: <code>{gtfsStop?.id}</code></span>
         </div> }
+
+        {highlightedTrip && <><button onClick={prevInTripHandler}>Prev</button> <button onClick={nextInTripHandler}>Next</button></>}
 
         <MatchDetailsTripList {...{gtfsStop, gtfsData, highlightedTrip, setHighlightedTrip}} />
 
