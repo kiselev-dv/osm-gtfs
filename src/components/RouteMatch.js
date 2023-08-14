@@ -9,10 +9,6 @@ export default function RouteMatch({routeMatch}) {
 
     const gtfsRouteTitle = gtfsRoute && (`${gtfsRoute?.shortName} - ${gtfsRoute?.longName}`);
 
-    // const osmTrips = osmRoute?.tripRelations?.map(tripRelation => 
-    //     <div key={tripRelation.id}><span>trip: </span>{tripRelation.tags.name}</div>
-    // );
-
     return <>
     <div key={id} className={'route-match'}>
         {gtfsRouteTitle && <span>{ gtfsRouteTitle }</span>}
