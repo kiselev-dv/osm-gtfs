@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import classNames from 'classnames';
 import './App.css';
 
 import Map from './components/Map'
@@ -8,20 +9,18 @@ import MatchSettings, {matchSettingsMatch} from './components/MatchSettings';
 import MatchDetails from './components/MatchDetails';
 import MapMatchMarker from './components/MapMatchMarker';
 import QeryOSM from './components/QueryOSM';
-
-import { RoutesMatch, StopsMatch, listRouteRelationsOSMData } from './services/Matcher';
-import { StopMatchesSequence } from './models/StopMatchesSequence';
 import MapTrip from './components/MapTrip';
+import RouteMatch from './components/RouteMatch';
 import RematchController from './components/RematchController';
 import NewStopController from './components/NewStopController';
-import OsmStop from './models/OsmStop';
 import StopMoveController from './components/StopMoveController';
-import classNames from 'classnames';
+import OpenCurentViewInJosm from './components/OpenCurentViewInJosm';
+
+import { RoutesMatch, StopsMatch } from './services/Matcher';
+import { StopMatchesSequence } from './models/StopMatchesSequence';
 import { Changes } from './components/Changes';
 import { filterTagStatsByRe, findMostPopularTag } from './services/utils';
-import OpenCurentViewInJosm from './components/OpenCurentViewInJosm';
 import { TagEditor } from './components/OsmTags';
-import RouteMatch from './components/RouteMatch';
 import { CREATE_NEW, SET_MATCH, SET_POSITION, applyAction } from './models/editor';
 
 function App() {
