@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { HelpRefCodeTag, HelpNameTemplate } from './HelpMarkdown';
-
+import { HelpRefCodeTag } from './HelpMarkdown';
+import "./MatchSettings.css";
 
 export default function MatchSettings({ matchSettings, setMatchSettings }) {
     const { refTag, matchByName, matchByCodeInName } = matchSettings;
@@ -34,24 +34,26 @@ export default function MatchSettings({ matchSettings, setMatchSettings }) {
     //     });
     // };
 
-    return <div>
-        <HelpRefCodeTag></HelpRefCodeTag>
+    return <div className={"match-settings"}>
         <div>
             <span>OSM Tag with GTFS stop code: </span>
             <span>
                 <input value={refTag} onChange={e => setTag(e.target.value)}></input>
             </span>
         </div>
+        <HelpRefCodeTag></HelpRefCodeTag>
         <div>
             <span>Match stops by name: </span>
             <span>
-                <input type={'checkbox'} checked={matchByName} onChange={e => setMatchByName(e.target.checked)}></input>
+                <input type={'checkbox'} checked={matchByName} 
+                    onChange={e => setMatchByName(e.target.checked)}></input>
             </span>
         </div>
         <div>
             <span>Match stops by GTFS code in name: </span>
             <span>
-                <input type={'checkbox'} checked={matchByCodeInName} onChange={e => setMatchByCodeInName(e.target.checked)}></input>
+                <input type={'checkbox'} checked={matchByCodeInName} 
+                    onChange={e => setMatchByCodeInName(e.target.checked)}></input>
             </span>
         </div>
 

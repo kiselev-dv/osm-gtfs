@@ -12,4 +12,4 @@ Some examples:
 
 After OSM data query is loaded, you can
 find OSM tags statisc for tags containing
-`ref` or `gtfs` below.
+`ref` or `gtfs` above.

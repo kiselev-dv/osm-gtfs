@@ -1,10 +1,10 @@
 //@ts-check
 
 import KDBush from 'kdbush';
-import OsmStop from '../models/OsmStop';
 import GTFSData, { GTFSStop } from '../models/GTFSData';
-import OSMData from './OSMData';
 import { OsmRoute } from '../models/OsmRoute';
+import OsmStop from '../models/OsmStop';
+import OSMData from './OSMData';
 
 // Meters
 const SEARCH_RADIUS = 500;
@@ -246,7 +246,7 @@ export class RoutesMatch {
                     ref2Rel.set(ref, []);
                 }
 
-                ref2Rel.get(ref).push(rel);    
+                ref2Rel.get(ref).push(rel);
             }
             else {
                 this.noRefRelations.push(rel);
