@@ -36,7 +36,7 @@ export class StopsMatch {
     /**
      * @param {*} settings
      * @param { GTFSData } gtfsData
-     * @param { OSMData } osmData 
+     * @param { OSMData } osmData
      */
     constructor(settings, gtfsData, osmData) {
         this.settings = {
