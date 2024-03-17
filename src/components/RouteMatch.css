@@ -4,6 +4,10 @@
     margin-bottom: 0.5em;
 }
 
+.trips-info-header {
+    margin-bottom: 0.25em;
+}
+
 .route-match span + span {
     margin-left: 0.4em;
 }

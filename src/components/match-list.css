@@ -10,7 +10,7 @@
 }
 
 .stop-match {
-    cursor: pointer;   
+    cursor: pointer;
 }
 .stop-match.selected {
     font-weight: bold;
