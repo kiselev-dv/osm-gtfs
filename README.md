@@ -1,11 +1,11 @@
 ## Install
 ```bash
-npm install
+yarn
 ```
 
 ## Dev server
 ```bash
-npm start
+yarn dev
 ```
 
 ## OSM PT V2 Route

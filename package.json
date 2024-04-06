@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist"
+    "deploy": "tsc && vite build --base \"/osm-gtfs/\" && gh-pages -d dist"
   },
   "dependencies": {
     "classnames": "^2.3.2",
