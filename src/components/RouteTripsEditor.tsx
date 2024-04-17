@@ -21,9 +21,9 @@ export type RouteTripsEditorProps = {
 } & IRouteTripsEditorState
 
 export default function RouteTripsEditor({
-    routeEditorSubj, setRouteEditorSubj}: RouteTripsEditorProps) {
+    routeEditorSubj}: RouteTripsEditorProps) {
 
-    const { routeMatch, gtfsTrip, osmTrip } = routeEditorSubj;
+    const { routeMatch } = routeEditorSubj;
 
     const [osmTripHighlight, setOsmTripHighlight] = useState<OSMRelation>();
 
