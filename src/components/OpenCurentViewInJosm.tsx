@@ -27,7 +27,7 @@ const OpenInJOSMControl = L.Control.extend({
 const controlInstance = new OpenInJOSMControl({position: 'topright'});
 
 export type OpenCurentViewInJosmProps = {
-    filteredMatches: StopMatch[]
+    filteredMatches?: StopMatch[]
 };
 export default function OpenCurentViewInJosm({filteredMatches}: OpenCurentViewInJosmProps) {
 

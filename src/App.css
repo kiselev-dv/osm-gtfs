@@ -36,6 +36,9 @@
 .tab-header span {
     padding: 0.25em 0.5em 0.25em 0.5em;
 }
+.tab-selector:hover {
+    cursor: pointer;
+}
 .tab-selector.active {
     background-color: aquamarine;
 }

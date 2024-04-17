@@ -1,21 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
-import GTFSData, { GTFSRoute, GTFSTripUnion } from '../models/GTFSData';
+import { useCallback } from 'react';
+import GTFSData from '../models/GTFSData';
 import StopListElement from './StopListElement';
 
+import { ListFiltersType } from '../models/Filters';
 import { loadInJOSM } from '../services/JOSMRemote';
 import { StopMatchData } from '../services/Matcher';
 import { StopMatch } from '../services/Matcher.types';
 import { OSMElement } from '../services/OSMData.types';
+
 import './match-list.css';
-
-type RouteOrTrip = GTFSRoute | GTFSTripUnion;
-
-export type ListFiltersType = {
-    showMatched: boolean
-    showUnmatchedGtfs: boolean
-    showUnmatchedOsm: boolean
-    filterBy: RouteOrTrip[]
-};
 
 type inputChangeCB = (e: React.ChangeEvent<HTMLInputElement>) => void;
 type FilterKey = 'showMatched' | 'showUnmatchedGtfs' | 'showUnmatchedOsm';
@@ -23,24 +16,19 @@ type FilterKey = 'showMatched' | 'showUnmatchedGtfs' | 'showUnmatchedOsm';
 export type MatchListProps = {
     matchData: StopMatchData
     gtfsData: GTFSData
-    filteredMatches: StopMatch[]
-    setFilteredMatches: (matches: StopMatch[]) => void
+    filters: ListFiltersType
+    setFilters: (filters: ListFiltersType) => any
+    filteredMatches?: StopMatch[]
     selectedMatch?: StopMatch
     selectMatch?: (match: StopMatch) => void
 };
 
 export default function MatchList({
     matchData, gtfsData,
-    filteredMatches, setFilteredMatches,
+    filters, setFilters,
+    filteredMatches,
     selectedMatch, selectMatch}: MatchListProps) {
     
-    const [filters, setFilters] = useState<ListFiltersType>({
-        showMatched: true,
-        showUnmatchedGtfs: true,
-        showUnmatchedOsm: true,
-        filterBy: []
-    });
-
     // TODO: move to FilterCheckbox
     const filterChangeHandler = useCallback<inputChangeCB>(event => {
         const key = event.target.getAttribute('data-key') as FilterKey;
@@ -50,13 +38,6 @@ export default function MatchList({
             [key]: value
         });
     }, [filters, setFilters]);
-
-    useEffect(() => {
-        if (matchData) {
-            const filtered = filterMatches(matchData, filters);
-            setFilteredMatches(filtered);
-        }
-    }, [filters, matchData, setFilteredMatches]);
 
     const openListInJOSM = useCallback(() => {
         if (filteredMatches) {
@@ -211,45 +192,4 @@ function decodeSelectKey(gtfsData: GTFSData, key: string) {
         const routeId = routeMatch[1];
         return gtfsData.routes[routeId];
     }
-}
-
-function filterMatches(matchData: StopMatchData, filters: ListFiltersType) {
-    const {
-        showMatched,
-        showUnmatchedGtfs,
-        showUnmatchedOsm,
-
-        filterBy
-    } = filters;
-
-    if (filterBy && filterBy.length > 0) {
-        const tripStopsIds = new Set();
-        const filterByTrips: GTFSTripUnion[] = [];
-
-        filterBy.forEach(filter => {
-            if (filter instanceof GTFSRoute) {
-                filterByTrips.push(...filter.trips);
-            }
-            else if (filter instanceof GTFSTripUnion) {
-                filterByTrips.push(filter);
-            }
-        });
-        
-        filterByTrips.forEach(trip => {
-            trip.stopSequence.forEach(stop => {
-                tripStopsIds.add(stop.id);
-            });
-        });
-
-        return [...matchData.matched, ...matchData.unmatchedGtfs]
-            .filter(match => tripStopsIds.has(match.gtfsStop?.id));
-    }
-
-    const results = [];
-
-    showMatched && results.push(...matchData.matched);
-    showUnmatchedGtfs && results.push(...matchData.unmatchedGtfs);
-    showUnmatchedOsm && results.push(...matchData.unmatchedOsm);
-
-    return results;
 }

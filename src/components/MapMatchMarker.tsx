@@ -62,7 +62,7 @@ export function getMatchColor(match: StopMatch) {
     const osmStop = match.osmStop;
     
     if (osmStop && gtfsStop) {
-        return '#0000ff';
+        return '#3399FF';
     }
 
     // unmatched GTFS

@@ -1,6 +1,6 @@
 
 .trips-info {
-    font-size: 0.75em;
+    font-size: 0.8em;
     margin-bottom: 0.5em;
 }
 
@@ -14,4 +14,33 @@
 
 .trips-info span + span {
     margin-left: 0.5em;
+}
+
+.route-match-gtfs-name {
+    margin-bottom: 0.25em;
+}
+
+.match-count {
+    font-size: 0.8em;
+}
+
+.match-count.all-matched {
+    color: green;
+}
+
+.trips-h2 {
+    margin-top: 0.4em;
+    margin-bottom: 0.1em;
+}
+
+.selectable {
+    cursor: pointer;
+}
+
+.routes-filters {
+    padding-bottom: 1em;
+}
+
+.routes-list {
+    border-top: 1px solid black;
 }

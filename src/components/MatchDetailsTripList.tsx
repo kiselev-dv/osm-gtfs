@@ -38,7 +38,7 @@ export default function MatchDetailsTripList({
 
     return gtfsStop ? (
     <>
-        <h4>Following route trips are going through this stop:</h4>
+        <h4>Routes on this stop</h4>
         <div className={'stop-trip-list'}>
         { tripList }
         </div>

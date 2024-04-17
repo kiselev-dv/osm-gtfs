@@ -49,6 +49,34 @@ export const layers = {
     mapnik, sat
 }
 
+const DarkenControl = L.Control.extend({
+    onAdd: function(map: L.Map) {
+        const div = L.DomUtil.create('div');
+        div.className = 'll-darken-control';
+        div.innerHTML = '<label>Darken map </label>';
+
+        const cb = L.DomUtil.create('input');
+        cb.type = 'checkbox';
+        cb.onclick = function(e: MouseEvent) {
+            const target = e.target! as HTMLInputElement;
+            if(target.checked) {
+                map.getContainer().classList.add('darken');
+            }
+            else {
+                map.getContainer().classList.remove('darken');
+            }
+        };
+
+        div.appendChild(cb);
+
+        return div;
+    },
+
+    onRemove: function() {
+    },
+
+});
+
 export type MapProps = {
     children: React.ReactNode,
     center?: LatLon | null,
@@ -75,6 +103,8 @@ const Map: React.FC<MapProps> = ({children, view, bbox, center, satellite}) => {
         }, {}, {collapsed: false}).addTo(map);
 
         setMap(map);
+
+        new DarkenControl({position: 'topright'}).addTo(map);
 
         return () => {
             map.remove();

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import './App.css';
 
 import GTFSLoad from './components/GTFSLoad';
@@ -13,12 +13,14 @@ import NewStopController from './components/NewStopController';
 import OpenCurentViewInJosm from './components/OpenCurentViewInJosm';
 import QeryOSM from './components/QueryOSM';
 import RematchController from './components/RematchController';
-import RouteMatch from './components/RouteMatch';
+import RouteMatch, { RoutesMatchFilters } from './components/RouteMatch';
 import StopMoveController from './components/StopMoveController';
 
 import { Changes } from './components/Changes';
 import { TagEditor } from './components/OsmTags';
+import RouteTripsEditor, { RouteTripsEditorContext } from './components/RouteTripsEditor';
 import { CREATE_NEW, EditSubjectType, SET_MATCH, SET_POSITION, applyAction, doneEditCB } from './models/Editor';
+import { ListFiltersType, defaultFilters, filterMatches } from './models/Filters';
 import GTFSData, { GTFSTripUnion } from './models/GTFSData';
 import { StopMatchesSequence } from './models/StopMatchesSequence';
 import { RoutesMatch, StopMatchData } from './services/Matcher';
@@ -50,13 +52,15 @@ function App() {
     });
 
     const [matchData, setMatchData] = useState<StopMatchData>();
-    const [filteredMatches, setFilteredMatches] = useState<StopMatch[]>([]);
     const [gtfsTags, setGtfsTags] = useState<TagStatistics>();
+
+    const [filters, setFilters] = useState<ListFiltersType>(defaultFilters);
 
     const [selectedMatch, selectMatch] = useState<StopMatch>();
     const [highlightedTrip, setHighlightedGtfsTrip] = useState<GTFSTripUnion>();
     const [highlightedMatchTrip, setHighlightedMatchTrip] = useState<StopMatchesSequence>();
     const [routesMatch, setRoutesMatch] = useState<RoutesMatch>();
+    const [routeEditorSubj, setRouteEditorSubj] = useState<RouteTripsEditorContext>({});
 
     const [platformTemplate, setPlatformTemplate] = useState<OSMElementTags>({
         'public_transport': 'platform',
@@ -96,6 +100,28 @@ function App() {
         
     }, [matchData, selectMatch]);
 
+    
+    const handleOsmData = useCallback<handleOsmDataCB>((data) => {
+        const tagStats = data.calculateTagStatistics(el => el.type === 'node');
+        const refTags = filterTagStatsByRe(tagStats, /gtfs|ref/);
+        
+        setGtfsTags(refTags);
+        
+        findMostPopularTag(refTags, 50, tagKey => {
+            setMatchSettings({
+                ...matchSettings,
+                refTag: tagKey
+            });
+        });
+        
+        setOSMData(data);
+        
+    }, [setGtfsTags, setOSMData, matchSettings, setMatchSettings]);
+    
+    const matchDone = matchSettingsMatch(matchSettings, matchData?.settings);
+    
+    const dataBBOX = gtfsData && gtfsData.bbox;
+
     const runMatch = useCallback(() => {
         if (!gtfsData || !osmData) {
             return;
@@ -106,30 +132,12 @@ function App() {
         setRoutesMatch(new RoutesMatch(matchSettings, gtfsData, osmData, match));
 
         setMatchData(match);
-        setFilteredMatches(match.matched);
         selectTab('stops');
     }, [matchSettings, gtfsData, osmData, setMatchData]);
 
-    const handleOsmData = useCallback<handleOsmDataCB>((data) => {
-        const tagStats = data.calculateTagStatistics(el => el.type === 'node');
-        const refTags = filterTagStatsByRe(tagStats, /gtfs|ref/);
-
-        setGtfsTags(refTags);
-
-        findMostPopularTag(refTags, 50, tagKey => {
-            setMatchSettings({
-                ...matchSettings,
-                refTag: tagKey
-            });
-        });
-
-        setOSMData(data);
-
-    }, [setGtfsTags, setOSMData, matchSettings, setMatchSettings]);
-
-    const matchDone = matchSettingsMatch(matchSettings, matchData?.settings);
-    
-    const dataBBOX = gtfsData && gtfsData.bbox;
+    const filteredMatches = useMemo(() => {
+        return matchData && filterMatches(matchData, filters);
+    }, [matchData, matchData?.matched, filters]);
 
     // Editor state
     const [editSubj, setEditSubj] = useState<EditSubjectType>();
@@ -195,6 +203,11 @@ function App() {
                             Routes
                     </span>
                     <span
+                        className={classNames('tab-selector', {active: activeTab==='trips'})}
+                        onClick={() => {selectTab('trips')}} key={'trips'}>
+                            Trips
+                    </span>
+                    <span
                         className={classNames('tab-selector', {active: activeTab==='changes'})}
                         onClick={() => {selectTab('changes')}} key={'changes'}>
                             Changes
@@ -230,30 +243,53 @@ function App() {
                     }
 
                     {matchData && gtfsData && <MatchList {...{
-                        matchData, gtfsData,
-                        filteredMatches, setFilteredMatches,
+                        matchData,
+                        gtfsData,
+                        filteredMatches,
+                        filters, setFilters,
                         selectedMatch, selectMatch
                     }}></MatchList>}
                 </div>
 
                 <div className={classNames('tab', 'routes-tab', {active: activeTab === 'routes'})}>
-                    <div className={'scroll-pane'}>
+                    <RoutesMatchFilters {...{filters, setFilters}}/>
+                    <div className={classNames('scroll-pane', 'routes-list')}>
                         <h4>Matched</h4>
-                        { routesMatch?.matched?.map(r => <RouteMatch key={r.gtfsRoute!.id} routeMatch={r} />) }
+                        { matchData && routesMatch?.matched?.map(r =>
+                            <RouteMatch key={r.gtfsRoute!.id}
+                                routeMatch={r} stopMatchData={matchData}
+                                {...{routeEditorSubj, setRouteEditorSubj}}
+                                {...{filters, setFilters}}
+                            />)
+                        }
                         
                         <h4>Unmatched GTFS</h4>
-                        { routesMatch?.unmatchedGtfs?.map(r => <RouteMatch key={r.gtfsRoute!.id} routeMatch={r}/>) }
+                        { matchData && routesMatch?.unmatchedGtfs?.map(r =>
+                            <RouteMatch key={r.gtfsRoute!.id}
+                                routeMatch={r} stopMatchData={matchData}
+                                {...{routeEditorSubj, setRouteEditorSubj}}
+                                {...{filters, setFilters}} />)
+                        }
                         
                         <h4>Unmatched OSM</h4>
-                        { routesMatch?.unmatchedOsm?.map(r => <RouteMatch key={ r.osmRoute!.ref } routeMatch={r}/>) }
+                        { matchData && routesMatch?.unmatchedOsm?.map(r =>
+                            <RouteMatch key={ r.osmRoute!.ref }
+                                routeMatch={r} stopMatchData={matchData}
+                                {...{routeEditorSubj, setRouteEditorSubj}}
+                                {...{filters, setFilters}} />)
+                        }
                         
                         <h4>OSM Routes without ref</h4>
                         { routesMatch?.noRefRelations?.map(r => <div key={ r.id }>{ r.tags.name }</div>) }
                     </div>
                 </div>
 
+                <div className={classNames('tab', 'trips-tab', {active: activeTab === 'trips'})}>
+                    <RouteTripsEditor {...{routeEditorSubj, setRouteEditorSubj}} />
+                </div>
+
                 <div className={classNames('tab', 'changes-tab', {active: activeTab === 'changes'})}>
-                    <div>
+                    <div className={'scroll-pane'}>
                         <Changes {...{osmData}} />
                     </div>
                 </div>

@@ -39,6 +39,7 @@ export class StopMatchData {
     unmatchedOsm: StopMatch[]
     
     matchByGtfsId: {[gtfsStopId: string]: StopMatch}
+    matchByOSMId: {[osmStopId: string]: StopMatch}
 
     constructor(settings: MatchSettingsType, gtfsData: GTFSData, osmData: OSMData) {
         this.settings = {
@@ -55,6 +56,21 @@ export class StopMatchData {
         [...this.matched, ...this.unmatchedGtfs].forEach(match => {
             if (match.gtfsStop) {
                 this.matchByGtfsId[match.gtfsStop.id] = match;
+            }
+        });
+
+        this.matchByOSMId = {};
+        [...this.matched, ...this.unmatchedOsm].forEach(match => {
+            if (match.osmStop) {
+                const platform = match.osmStop.platform;
+                if (platform) {
+                    this.matchByOSMId[`${platform.type[0]}${platform.id}`] = match;
+                }
+
+                const stopPosition = match.osmStop.stopPosition;
+                if (stopPosition) {
+                    this.matchByOSMId[`${stopPosition.type[0]}${stopPosition.id}`] = match;
+                }
             }
         });
     }
@@ -150,6 +166,10 @@ export class StopMatchData {
 
         return false;
     }
+
+    findMatchByOsmElementTypeAndId(type: string, id: number) {
+        return this.matchByOSMId[`${type[0]}${id}`];
+    }
 }
 
 function findMatch(gtfsStop: GTFSStop, surroundOsmStops: OsmStop[], refTag: string) {
@@ -181,7 +201,7 @@ export function listRouteRelationsOSMData(osmData: OSMData) {
         .filter(e => e.type === 'relation');
 
     return relations.filter(e => e.tags).filter(e => {
-        return e.tags['type'] === 'route' && 
+        return e.tags['type'] === 'route' &&
             ROUTE_TYPES.includes(e.tags['route']);
     });
 }
